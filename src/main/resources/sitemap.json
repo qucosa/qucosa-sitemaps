@@ -1,0 +1,16 @@
+{
+  "urlsets":{
+    "my-site":[
+      {"loc":"http://www.example.com/"},
+      {"lastmod":"2005-01-01"},
+      {"changefreq":"monthly"},
+      {"priority":"0.8"}
+    ],
+    "my-secondsite":[
+      {"loc":"http://www.mysecondsite.com/"},
+      {"lastmod":"2018-01-01"},
+      {"changefreq":"monthly"},
+      {"priority":"0.8"}
+    ]
+  }
+}
