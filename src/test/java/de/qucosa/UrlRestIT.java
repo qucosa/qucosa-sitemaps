@@ -36,45 +36,94 @@ import static org.hamcrest.Matchers.hasItems;
 public class UrlRestIT {
     private static final String USER_ENDPOINT = "/urlsets";
 
+    private Urlset urlset = new Urlset("my-site");
+    private Urlset urlset2 = new Urlset("my-secondsite");
+    private Urlset urlset3 = new Urlset("my-thirdsite");
+
+    private Url url = new Url("fooloc", "2018-10-10");
+    private Url url2 = new Url("fooloc2", "2018-10-10");
+    private Url url3 = new Url("fooloc3", "2018-10-10");
+    private Url url4 = new Url("fooloc4", "2018-10-10");
+
     @Before
     public void setupData() {
-        Urlset urlset = new Urlset("my-site");
-        Urlset urlset2 = new Urlset("my-secondsite");
+        create_urlsets();
+        create_urls();
+    }
 
+    private void create_urlsets() {
         given().contentType(ContentType.JSON).body(urlset).post(USER_ENDPOINT);
         given().contentType(ContentType.JSON).body(urlset2).post(USER_ENDPOINT);
+    }
 
-        Url url = new Url("fooloc", "2018-10-10");
-        Url url2 = new Url("fooloc2", "2018-10-10");
-        Url url3 = new Url("fooloc3", "2018-10-10");
-
+    private void create_urls() {
         given().contentType(ContentType.JSON).body(url).post("/urlsets/my-site");
         given().contentType(ContentType.JSON).body(url2).post("/urlsets/my-site");
         given().contentType(ContentType.JSON).body(url3).post("/urlsets/my-secondsite");
     }
 
+    /**
+     * urlset-tests
+     */
     @Test
-    public void setupTest() {
-        System.out.println("test");
+    public void is_urlset_persisted() {
+        given().headers("Content-Type", ContentType.JSON)
+                .when().get(USER_ENDPOINT).then()
+                .body("uri[0]", equalTo("my-site"));
+
+        given().headers("Content-Type", ContentType.JSON)
+                .when().get(USER_ENDPOINT).then()
+                .body("uri[1]", equalTo("my-secondsite"));
     }
 
     @Test
-    public void create_urlset() {
-        Urlset urlset = new Urlset("my-site");
-
-        given().contentType(ContentType.JSON).body(urlset)
+    public void posting_urlset_responds_with_CREATED() {
+        given().contentType(ContentType.JSON).body(urlset3)
                 .when().post(USER_ENDPOINT).then()
                 .assertThat().statusCode(equalTo(HttpStatus.CREATED.value()));
     }
 
     @Test
-    public void persist_created_urlset() {
-        given().headers("Content-Type", ContentType.JSON)
-                .when().get(USER_ENDPOINT).then()
-                .body("uri[0]", equalTo("my-site"));
+    public void is_urlset_deleted() {
+        when().delete("urlsets/my-site").then()
+                .statusCode(equalTo(HttpStatus.NO_CONTENT.value()));
 
-        when().get(USER_ENDPOINT).then()
-                .statusCode(equalTo(HttpStatus.OK.value()));
+        when().get("urlsets/my-site").then()
+                .statusCode(equalTo(HttpStatus.NOT_FOUND.value()));
     }
 
+    /**
+     * url (children of urlsets) tests
+     */
+    @Test
+    public void is_url_persisted() {
+        given().headers("Content-Type", ContentType.JSON)
+                .when().get("urlsets/my-site/fooloc").then()
+                .body("loc[0]", equalTo("fooloc"));
+
+        given().headers("Content-Type", ContentType.JSON)
+                .when().get("urlsets/my-site/fooloc2").then()
+                .body("loc[0]", equalTo("fooloc2"));
+
+        given().headers("Content-Type", ContentType.JSON)
+                .when().get("urlsets/my-secondsite/fooloc3").then()
+                .body("loc[0]", equalTo("fooloc3"));
+    }
+
+    @Test
+    public void posting_url_responds_with_CREATED() {
+        given().contentType(ContentType.JSON).body(url4)
+                .when().post("urlsets/my-site").then()
+                .assertThat().statusCode(equalTo(HttpStatus.NO_CONTENT.value()));
+    }
+
+    @Test
+    public void is_url_deleted() {
+        System.out.println("test");
+        when().delete("urlsets/my-site/fooloc").then()
+                .statusCode(equalTo(HttpStatus.NO_CONTENT.value()));
+
+        when().delete("urlsets/my-site/dummyloc").then()
+                .statusCode(equalTo(HttpStatus.NOT_FOUND.value()));
+    }
 }

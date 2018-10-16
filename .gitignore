@@ -1,0 +1,10 @@
+.classpath
+.project
+build.properties
+.settings/
+target/
+.vagrant/
+.idea/
+*.iml
+out/
+*.swp
