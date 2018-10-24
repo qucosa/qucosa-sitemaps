@@ -15,9 +15,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.qucosa.repository;
+package de.qucosa.model;
 
-import de.qucosa.model.Url;
-import org.springframework.data.jpa.repository.JpaRepository;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface UrlRepository extends JpaRepository<Url, String> { }
+
+@XmlRootElement(name="urlset")
+public class SitemapModel {
+    List<Url> url = new ArrayList<Url>();
+
+    public List<Url> getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(List<Url> url) {
+        this.url = url;
+    }
+
+    List<Urlset> urlset = new ArrayList<>();
+
+    public List<Urlset> getUrlset() {
+        return urlset;
+    }
+
+    public void setUrlset(List<Urlset> urlset) {
+        this.urlset = urlset;
+    }
+}

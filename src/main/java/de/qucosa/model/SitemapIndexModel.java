@@ -15,30 +15,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.qucosa.sitemap;
+package de.qucosa.model;
 
-public class Sitemap {
-    private long id;
-    private String content;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Sitemap(long id, String content) {
-        this.id = id;
-        this.content = content;
+
+@XmlRootElement(name="sitemapindex")
+public class SitemapIndexModel {
+    List<Urlset> urlset = new ArrayList<Urlset>();
+
+    @XmlElement(name="sitemap")
+    public List<Urlset> getUrlset() {
+        return urlset;
     }
 
-    public long getId() {
-        return id;
+    public void setUrlset(List<Urlset> urlset) {
+        this.urlset = urlset;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

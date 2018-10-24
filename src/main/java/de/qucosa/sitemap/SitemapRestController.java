@@ -17,12 +17,16 @@
 
 package de.qucosa.sitemap;
 
+import de.qucosa.model.SitemapIndexModel;
+import de.qucosa.model.SitemapModel;
 import de.qucosa.model.Url;
 import de.qucosa.model.Urlset;
 import de.qucosa.repository.UrlRepository;
 import de.qucosa.repository.UrlSetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +34,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.InetAddress;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -43,28 +53,52 @@ public class SitemapRestController {
     private UrlSetRepository urlSetRepository;
     @Autowired
     private UrlRepository urlRepository;
+    // to get server port
+    @Autowired
+    Environment environment;
+
+    public String getHostUrl() {
+        String ip = InetAddress.getLoopbackAddress().getHostAddress();
+        String hosturl = ip+":"+environment.getProperty("local.server.port")+"/";
+        return hosturl;
+    }
+
+    /**
+     * get timestamp (lastmod) for url/urlset
+     * @return date in w3c datetime format as string
+     */
+    private String getCurrentDatetime() {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String w3cDatetimeString = format.format(new Date())+"+00:00";
+        return w3cDatetimeString;
+    }
 
     /**
      * url-operation to
      * create url in given urlSetName
      */
-    @RequestMapping(method = POST, value = "/urlsets/{urlSetName}")
+    @RequestMapping(method = POST, value = "/urlsets/{urlSetName}", consumes = MediaType.APPLICATION_JSON_VALUE
+            , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-        List<Urlset> urlsets = urlSetRepository.findAll();
+        url.setUrlset(urlSetRepository.findById(urlSetName).get());
+        urlRepository.save(url);
+        Urlset urlset = urlSetRepository.findById(urlSetName).get();
+        urlset.getUrlList().add(url);
+        urlSetRepository.save(urlset);
 
-        for (Urlset set : urlsets) {
-            if (set.getUri().equals(urlSetName)) {
-                urlSetRepository.findById(set.getId()).map(urlset -> {
-                    url.setUrlset(urlset);
-                    return urlRepository.save(url);
-                });
+        return new ResponseEntity<>(url, HttpStatus.CREATED);
 
-                return new ResponseEntity<>(HttpStatus.CREATED);
-            }
+        /*
+        HTTP/1.1 201 CREATED
+        Content-Type: application/json
+        {
+            "uri":"urlsets/my-site/https://example.com/foo"
+            "loc":"https://example.com/foo",
+            "lastmod":"2015-09-12"
         }
-
-        return new ResponseEntity<>("urlSet '" + urlSetName + "' not found.", HttpStatus.NOT_FOUND);
+         */
     }
 
     // TODO: urls als eingabeparameter
@@ -72,42 +106,67 @@ public class SitemapRestController {
      * url-operation to
      * delete url in given urlSetName
      */
-    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/{url}")
+//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/{url}")
+    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @PathVariable("url") String url) {
-        List<Urlset> urlsets = urlSetRepository.findAll();
-
-        for (Urlset set : urlsets) {
-            if (set.getUri().equals(urlSetName)) {
-                urlSetRepository.findById(set.getId()).map(urlset -> {
-                    List<Url> urlList = urlRepository.findAll();
-                    for (Url urlEntry : urlList) {
-                        if (urlEntry.getLoc().equals(url)) {
-                            urlRepository.findById(urlEntry.getId()).map(url2 -> {
-                                urlRepository.delete(urlEntry);
-
-                                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                            });
-                            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                        }
-                    }
-                    urlSetRepository.save(set);
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                });
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urls) {
+        // set location for urlset, correlates to "localhost:8080" + "slub"
+        for (String url : urls) {
+            Urlset urlset = urlRepository.findById(url).get().getUrlset();
+            urlset.setLastmod(getCurrentDatetime());
+            urlRepository.delete(urlRepository.findById(url).get());
         }
 
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * url-operation to
+     * delete url in given urlSetName
+     */
+//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/{url}")
+    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
+        Urlset setInRepo = urlSetRepository.findById(urlSetName).get();
+        Url urlInRepo = urlRepository.findById(url.getLoc()).get();
+
+        // Url-location is part of the Urlset (tenant) in url (urlSetName}
+        if (setInRepo.getUrlList().contains(urlInRepo)) {
+            urlRepository.delete(urlRepository.findById(url.getLoc()).get());
+            urlRepository.delete(urlInRepo);
+            setInRepo.setLastmod(getCurrentDatetime());
+            setInRepo.getUrlList().remove(url);
+            urlSetRepository.save(setInRepo);
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        // TODO respond with info for usage (loc has to be in the Urlset)?
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * url-operation to
+     * get url in given urlSetName
+     */
+    @RequestMapping(method = GET, value = "/urlsets/{urlSetName}/{url}")
+    @ResponseBody
+    public ResponseEntity getUrl(@PathVariable("urlSetName") String urlSetName, @PathVariable("url") String url) {
+        return new ResponseEntity<>(urlRepository.findById(url).get(), HttpStatus.OK);
     }
 
     /**
      * urlset-operation to
      * create urlSets
      */
-    @RequestMapping(method = POST, value = "/urlsets")
+    @RequestMapping(method = POST, value = "/urlsets", consumes = MediaType.APPLICATION_JSON_VALUE
+            , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrlSet(@RequestBody Urlset urlset) {
+        // set location for urlset, correlates to "localhost:8080" + "slub"
+        urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
+        urlset.setLastmod(getCurrentDatetime());
         urlSetRepository.save(urlset);
 
         return new ResponseEntity<>(urlset, HttpStatus.CREATED);
@@ -115,32 +174,28 @@ public class SitemapRestController {
 
     /**
      * urlSet-operation to
-     * get all urlSets
+     * get specific tenant-sitemap (UrlSet) as XML
+     * listens to GET-Requests with any content-type but "application/json"
      */
-    @RequestMapping(method = GET, value = "/urlsets")
+    @RequestMapping(method = GET, value = "/urlsets/{urlSetName}", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public ResponseEntity getAllUrlSets() {
-        List<Urlset> allUrlsets = urlSetRepository.findAll();
+    public ResponseEntity getSitemapForTenant(@PathVariable("urlSetName") String urlSetName) {
+        SitemapModel tenantSitemap = new SitemapModel();
+        tenantSitemap.setUrl(urlSetRepository.findById(urlSetName).get().getUrlList());
 
-        return new ResponseEntity<>(allUrlsets, HttpStatus.OK);
+        return new ResponseEntity<>(tenantSitemap, HttpStatus.OK);
     }
 
     /**
      * urlSet-operation to
-     * get all urlSets
+     * get specific tenant-sitemap (UrlSet) as JSON
+     * listens to GET-Requests with content-type="application/json"
      */
-    @RequestMapping(method = GET, value = "/urlsets/{urlSetName}")
+    @RequestMapping(method = GET, value = "/urlsets/{urlSetName}", consumes = MediaType.APPLICATION_JSON_VALUE
+            , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
-    public ResponseEntity getUrlSet(@PathVariable("urlSetName") String urlSetName) {
-        List<Urlset> urlsets = urlSetRepository.findAll();
-
-        for (Urlset set : urlsets) {
-            if (set.getUri().equals(urlSetName)) {
-                return new ResponseEntity<>(set, HttpStatus.OK);
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity getSitemapforTenantAsJson(@PathVariable("urlSetName") String urlSetName) {
+        return new ResponseEntity<>(urlSetRepository.findById(urlSetName).get(), HttpStatus.OK);
     }
 
     /**
@@ -150,15 +205,37 @@ public class SitemapRestController {
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}")
     @ResponseBody
     public ResponseEntity deleteUrlSet(@PathVariable("urlSetName") String urlSetName) {
-        List<Urlset> urlsets = urlSetRepository.findAll();
+        urlSetRepository.delete(urlSetRepository.findById(urlSetName).get());
 
-        for (Urlset set : urlsets) {
-            if (set.getUri().equals(urlSetName)) {
-                urlSetRepository.delete(set);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    /**
+     * sitemap-operation to
+     * get sitemapindex (all urlSets) as XML
+     * responds with locations to every tenant sitemap
+     * listens to GET-Requests with any content-type but "application/json"
+     */
+    @RequestMapping(method = GET, value = "/urlsets"
+            , produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public ResponseEntity getSitemapIndex() {
+        SitemapIndexModel sitemapIndex = new SitemapIndexModel();
+        sitemapIndex.setUrlset(urlSetRepository.findAll());
+
+        return new ResponseEntity<>(sitemapIndex, HttpStatus.OK);
+    }
+
+    /**
+     * sitemap-operation to
+     * get sitemapindex (all urlSets) as JSON
+     * listens to GET-Requests with content-type="application/json"
+     */
+    @RequestMapping(method = GET, value = "/urlsets", consumes = MediaType.APPLICATION_JSON_VALUE
+            , produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity getSitemapIndexAsJson() {
+        List<Urlset> allUrlsets = urlSetRepository.findAll();
+        return new ResponseEntity<>(allUrlsets, HttpStatus.OK);
     }
 }

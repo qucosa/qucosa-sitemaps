@@ -21,26 +21,38 @@ package de.qucosa.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.Objects;
 
 @Entity
 public class Url {
-    @Id
-    @GeneratedValue
-    private long id;
-
     @ManyToOne
-    @JoinColumn(name="urlset_id")
+    @JoinColumn(name="urlset_uri", referencedColumnName = "uri")
     @JsonBackReference
 //    @JsonIgnore
     private Urlset urlset;
+    @Id
     private String loc;
     private String lastmod;
     private String changefreq;
     private String priority;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Url url = (Url) o;
+        return Objects.equals(loc, url.loc);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(loc);
+    }
 
     public Url() {
         super();
@@ -57,12 +69,6 @@ public class Url {
         this.changefreq = changefreq;
         this.priority = priority;
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) { this.id = id; }
 
     public String getLoc() {
         return loc;
@@ -96,9 +102,7 @@ public class Url {
         this.priority = priority;
     }
 
-//    @ManyToOne
-//    @JoinColumn(name="", nullable=false)
-//    @JsonBackReference
+    @XmlTransient
     public Urlset getUrlset() { return urlset; }
 
     public void setUrlset(Urlset urlset) { this.urlset = urlset; }

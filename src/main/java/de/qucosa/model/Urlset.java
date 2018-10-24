@@ -24,20 +24,25 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Urlset {
     @Id
-    @GeneratedValue
-    @Column(name="id")
-    private long id;
+    @Column(name="uri")
     private String uri;
 
-    @OneToMany(mappedBy = "urlset", cascade = CascadeType.ALL)
+    private String loc;
+
+    private String lastmod;
+
+    @OneToMany(mappedBy = "urlset", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Url> urlList;
 
@@ -47,24 +52,16 @@ public class Urlset {
 
     public Urlset() { super(); }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
     public void setUri(String uri) {
         this.uri = uri;
     }
 
-//    @OneToMany
-//    @JsonManagedReference
+    @XmlTransient
+    public String getUri() {
+        return uri;
+    }
+
+    @XmlTransient
     public List<Url> getUrlList() {
         return urlList;
     }
@@ -81,4 +78,35 @@ public class Urlset {
         this.urlList = urlList;
     }
 
+    @XmlElement
+    public String getLastmod() {
+        return lastmod;
+    }
+
+    public void setLastmod(String lastmod) {
+        this.lastmod = lastmod;
+    }
+
+    @XmlElement
+    public String getLoc() {
+        return loc;
+    }
+
+    public void setLoc(String loc) {
+        this.loc = loc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Urlset urlset = (Urlset) o;
+        return Objects.equals(uri, urlset.uri);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(uri);
+    }
 }

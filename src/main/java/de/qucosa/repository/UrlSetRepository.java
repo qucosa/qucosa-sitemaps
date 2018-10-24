@@ -20,4 +20,4 @@ package de.qucosa.repository;
 import de.qucosa.model.Urlset;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UrlSetRepository extends JpaRepository<Urlset, Long> { }
+public interface UrlSetRepository extends JpaRepository<Urlset, String> { }
