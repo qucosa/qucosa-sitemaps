@@ -25,10 +25,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class Url {
+public class Url implements Serializable {
     @ManyToOne
     @JoinColumn(name="urlset_uri", referencedColumnName = "uri")
     @JsonBackReference

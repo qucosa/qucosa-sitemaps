@@ -29,11 +29,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Urlset {
+public class Urlset implements Serializable {
     @Id
     @Column(name="uri")
     private String uri;
@@ -42,6 +43,13 @@ public class Urlset {
 
     private String lastmod;
 
+    /**
+     * parameter orphanRemoval to cascade the remove operation on both entities "Url" and "Urlset",
+     * otherwise deleting an Url from both repositories in the Spring Boot SitemapRestController doesn't work.
+     *
+     * parameter fetch set to "Eager" to handout url-list (i.e. for the sitemap)
+     * which otherwise can't be loaded in "Lazy"-fetchtype
+     */
     @OneToMany(mappedBy = "urlset", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Url> urlList;
