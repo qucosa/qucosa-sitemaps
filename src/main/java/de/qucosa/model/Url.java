@@ -19,6 +19,8 @@ package de.qucosa.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import de.qucosa.utils.Utils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -38,7 +40,9 @@ public class Url implements Serializable {
     @Id
     private String loc;
     private String lastmod;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String changefreq;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String priority;
 
     @Override

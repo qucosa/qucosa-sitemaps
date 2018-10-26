@@ -19,6 +19,7 @@ package de.qucosa.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.CascadeType;
@@ -52,6 +53,7 @@ public class Urlset implements Serializable {
      */
     @OneToMany(mappedBy = "urlset", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Url> urlList;
 
     public Urlset(String uri) {
