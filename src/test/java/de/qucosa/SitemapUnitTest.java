@@ -21,7 +21,7 @@ import de.qucosa.model.Url;
 import de.qucosa.model.Urlset;
 import de.qucosa.repository.UrlRepository;
 import de.qucosa.repository.UrlSetRepository;
-import de.qucosa.utils.JsonUtil;
+import de.qucosa.utils.Utils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,21 +115,21 @@ public class SitemapUnitTest {
     private void delete_url(Url url, String urlSetName) throws Exception {
         mvc.perform(delete("/urlsets/" + urlSetName + "/deleteurl")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(JsonUtil.toJson(url)))
+        .content(Utils.toJson(url)))
                 .andExpect(status().isNoContent());
     }
 
     private void delete_urlset(String urlsetName) throws Exception {
         mvc.perform(delete("/urlsets/" + urlsetName)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(urlset)))
+                .content(Utils.toJson(urlset)))
                 .andExpect(status().isNoContent());
     }
 
     private void create_url(Url url, String urlsetName) throws Exception {
         mvc.perform(post("/urlsets/" + urlsetName)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(url)))
+                .content(Utils.toJson(url)))
 //                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -138,7 +138,7 @@ public class SitemapUnitTest {
     public void create_urlset(Urlset urlset) throws Exception {
         mvc.perform(post("/urlsets")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(urlset)))
+                .content(Utils.toJson(urlset)))
 //                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
