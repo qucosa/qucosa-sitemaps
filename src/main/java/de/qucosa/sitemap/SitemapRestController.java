@@ -23,6 +23,7 @@ import de.qucosa.model.Url;
 import de.qucosa.model.Urlset;
 import de.qucosa.repository.UrlRepository;
 import de.qucosa.repository.UrlSetRepository;
+import de.qucosa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,7 @@ import java.util.TimeZone;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class SitemapRestController {
@@ -64,17 +66,6 @@ public class SitemapRestController {
     }
 
     /**
-     * get timestamp (lastmod) for url/urlset
-     * @return date in w3c datetime format as string
-     */
-    private String getCurrentDatetime() {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String w3cDatetimeString = format.format(new Date())+"+00:00";
-        return w3cDatetimeString;
-    }
-
-    /**
      * url-operation to
      * create url in given urlSetName
      */
@@ -83,25 +74,61 @@ public class SitemapRestController {
     @ResponseBody
     public ResponseEntity createUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
         url.setUrlset(urlSetRepository.findById(urlSetName).get());
+        // set lastmod to current time if not given
+        if (Utils.empty(url.getLastmod())) {
+            url.setLastmod(Utils.getCurrentW3cDatetime());
+        }
         urlRepository.save(url);
         Urlset urlset = urlSetRepository.findById(urlSetName).get();
         urlset.getUrlList().add(url);
         urlSetRepository.save(urlset);
 
         return new ResponseEntity<>(url, HttpStatus.CREATED);
-
-        /*
-        HTTP/1.1 201 CREATED
-        Content-Type: application/json
-        {
-            "uri":"urlsets/my-site/https://example.com/foo"
-            "loc":"https://example.com/foo",
-            "lastmod":"2015-09-12"
-        }
-         */
     }
 
-    // TODO: urls als eingabeparameter
+    /**
+     * url-operation to
+     * modify/update url in given urlSetName
+     */
+    @RequestMapping(method = PUT, value = "/urlsets/{urlSetName}", consumes = MediaType.APPLICATION_JSON_VALUE
+            , produces = {MediaType.APPLICATION_JSON_VALUE})
+    @ResponseBody
+    public ResponseEntity modifyUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
+        Url modifyUrl = urlRepository.findById(url.getLoc()).get();
+
+        if (modifyUrl.getUrlset().getUri().equals(urlSetName)) {
+            if (!Utils.empty(url.getUrlset().getUri())) {
+                // check if urlset that was set in url-object in request exists in urlSetRepository
+                if (Utils.empty(urlSetRepository.findById(url.getUrlset().getUri()).get().getUri())) {
+                    modifyUrl.setUrlset(urlSetRepository.findById(url.getUrlset().getUri()).get());
+                } else {
+                    return new ResponseEntity<>("Urlset (url->urlset->uri) set in Url-Object in Request doesn't exist.", HttpStatus.NOT_FOUND);
+                }
+            }
+            // set lastmod to current time if not given
+            if (!Utils.empty(url.getLastmod())) {
+                modifyUrl.setLastmod(url.getLastmod());
+            } else {
+                modifyUrl.setLastmod(Utils.getCurrentW3cDatetime());
+            }
+            if (!Utils.empty(url.getChangefreq())) {
+                modifyUrl.setChangefreq(url.getChangefreq());
+            }
+            if (!Utils.empty(url.getPriority())) {
+                modifyUrl.setPriority(url.getPriority());
+            }
+
+            urlRepository.save(modifyUrl);
+            Urlset urlset = urlSetRepository.findById(urlSetName).get();
+            urlset.getUrlList().add(modifyUrl);
+            urlSetRepository.save(urlset);
+        } else {
+            return new ResponseEntity<>("Url doesn't exist in " + urlSetName + ".", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(url, HttpStatus.CREATED);
+    }
+
     /**
      * url-operation to
      * delete url in given urlSetName
@@ -113,7 +140,7 @@ public class SitemapRestController {
         // set location for urlset, correlates to "localhost:8080" + "slub"
         for (String url : urls) {
             Urlset urlset = urlRepository.findById(url).get().getUrlset();
-            urlset.setLastmod(getCurrentDatetime());
+            urlset.setLastmod(Utils.getCurrentW3cDatetime());
             urlRepository.delete(urlRepository.findById(url).get());
         }
 
@@ -135,7 +162,7 @@ public class SitemapRestController {
         if (setInRepo.getUrlList().contains(urlInRepo)) {
             urlRepository.delete(urlRepository.findById(url.getLoc()).get());
             urlRepository.delete(urlInRepo);
-            setInRepo.setLastmod(getCurrentDatetime());
+            setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
             setInRepo.getUrlList().remove(url);
             urlSetRepository.save(setInRepo);
 
@@ -166,7 +193,7 @@ public class SitemapRestController {
     public ResponseEntity createUrlSet(@RequestBody Urlset urlset) {
         // set location for urlset, correlates to "localhost:8080" + "slub"
         urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
-        urlset.setLastmod(getCurrentDatetime());
+        urlset.setLastmod(Utils.getCurrentW3cDatetime());
         urlSetRepository.save(urlset);
 
         return new ResponseEntity<>(urlset, HttpStatus.CREATED);
