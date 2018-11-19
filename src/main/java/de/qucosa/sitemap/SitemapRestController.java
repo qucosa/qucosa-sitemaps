@@ -36,12 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -81,6 +76,7 @@ public class SitemapRestController {
         urlRepository.save(url);
         Urlset urlset = urlSetRepository.findById(urlSetName).get();
         urlset.getUrlList().add(url);
+        urlset.setLastmod(Utils.getCurrentW3cDatetime());
         urlSetRepository.save(urlset);
 
         return new ResponseEntity<>(url, HttpStatus.CREATED);
@@ -120,6 +116,7 @@ public class SitemapRestController {
 
             urlRepository.save(modifyUrl);
             Urlset urlset = urlSetRepository.findById(urlSetName).get();
+            urlset.setLastmod(Utils.getCurrentW3cDatetime());
             urlset.getUrlList().add(modifyUrl);
             urlSetRepository.save(urlset);
         } else {
@@ -151,7 +148,6 @@ public class SitemapRestController {
      * url-operation to
      * delete url in given urlSetName
      */
-//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/{url}")
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
@@ -191,6 +187,12 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrlSet(@RequestBody Urlset urlset) {
+
+        if (urlSetRepository.findAll().contains(urlset)) {
+            return new ResponseEntity<String>("Urlset " + urlset.getUri() + " has already been created."
+                    , HttpStatus.ALREADY_REPORTED);
+        }
+
         // set location for urlset, correlates to "localhost:8080" + "slub"
         urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
         urlset.setLastmod(Utils.getCurrentW3cDatetime());
