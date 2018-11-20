@@ -69,16 +69,25 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-        url.setUrlset(urlSetRepository.findById(urlSetName).get());
+        if (Utils.empty(url.getLoc())) {
+            return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
+        }
         // set lastmod to current time if not given
         if (Utils.empty(url.getLastmod())) {
             url.setLastmod(Utils.getCurrentW3cDatetime());
         }
+
+        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
+        if (!containgUrlSet.isPresent()) {
+            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+        Urlset urlsetToModify = containgUrlSet.get();
+        url.setUrlset(urlsetToModify);
+
         urlRepository.save(url);
-        Urlset urlset = urlSetRepository.findById(urlSetName).get();
-        urlset.getUrlList().add(url);
-        urlset.setLastmod(Utils.getCurrentW3cDatetime());
-        urlSetRepository.save(urlset);
+        urlsetToModify.getUrlList().add(url);
+        urlsetToModify.setLastmod(Utils.getCurrentW3cDatetime());
+        urlSetRepository.save(urlsetToModify);
 
         return new ResponseEntity<>(url, HttpStatus.CREATED);
     }
@@ -91,8 +100,6 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity modifyUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-
-
         if (Utils.empty(url.getLoc())) {
             return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
         }
@@ -151,7 +158,6 @@ public class SitemapRestController {
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urls) {
-        // set location for urlset, correlates to "localhost:8080" + "slub"
         for (String url : urls) {
             Urlset urlset = urlRepository.findById(url).get().getUrlset();
             urlset.setLastmod(Utils.getCurrentW3cDatetime());
@@ -168,22 +174,40 @@ public class SitemapRestController {
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-        Urlset setInRepo = urlSetRepository.findById(urlSetName).get();
-        Url urlInRepo = urlRepository.findById(url.getLoc()).get();
+        if (Utils.empty(url.getLoc())) {
+            return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
+        if (!containgUrlSet.isPresent()) {
+            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Url> urlToBeModified = urlRepository.findById(url.getLoc());
+        if (!urlToBeModified.isPresent()) {
+            return new ResponseEntity<>("Url " + url.getLoc() + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+
+        Urlset setInRepo = containgUrlSet.get();
+        Url urlInRepo = urlToBeModified.get();
 
         // Url-location is part of the Urlset (tenant) in url (urlSetName}
         if (setInRepo.getUrlList().contains(urlInRepo)) {
-            urlRepository.delete(urlRepository.findById(url.getLoc()).get());
             urlRepository.delete(urlInRepo);
             setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
-            setInRepo.getUrlList().remove(url);
+            setInRepo.getUrlList().remove(urlInRepo);
             urlSetRepository.save(setInRepo);
+//            urlRepository.delete(urlRepository.findById(url.getLoc()).get());
+//            urlRepository.delete(urlInRepo);
+//            setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
+//            setInRepo.getUrlList().remove(url);
+//            urlSetRepository.save(setInRepo);
 
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>("Url '" + urlInRepo.getLoc() + "' doesn't exist in urlset (tenant) "
+                    + urlSetName, HttpStatus.BAD_REQUEST);
         }
-
-        // TODO respond with info for usage (loc has to be in the Urlset)?
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -204,12 +228,13 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrlSet(@RequestBody Urlset urlset) {
-
-        if (urlSetRepository.findAll().contains(urlset)) {
-            return new ResponseEntity<String>("Urlset " + urlset.getUri() + " has already been created."
+        Optional<Urlset> urlsetToCreate = urlSetRepository.findById(urlset.getUri());
+        if (urlsetToCreate.isPresent()) {
+            return new ResponseEntity<>("Urlset " + urlset.getUri() + " has already been created."
                     , HttpStatus.ALREADY_REPORTED);
         }
 
+        /* TODO hostauflösung überprüfen */
         // set location for urlset, correlates to "localhost:8080" + "slub"
         urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
         urlset.setLastmod(Utils.getCurrentW3cDatetime());
@@ -227,7 +252,14 @@ public class SitemapRestController {
     @ResponseBody
     public ResponseEntity getSitemapForTenant(@PathVariable("urlSetName") String urlSetName) {
         SitemapModel tenantSitemap = new SitemapModel();
-        tenantSitemap.setUrl(urlSetRepository.findById(urlSetName).get().getUrlList());
+
+        Optional<Urlset> urlset = urlSetRepository.findById(urlSetName);
+        if (!urlset.isPresent()) {
+            return new ResponseEntity<>("Urlset / Tenant: " + urlSetName + " doesn't exist."
+                    , HttpStatus.NOT_FOUND);
+        }
+
+        tenantSitemap.setUrl(urlset.get().getUrlList());
 
         return new ResponseEntity<>(tenantSitemap, HttpStatus.OK);
     }
@@ -241,7 +273,13 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity getSitemapforTenantAsJson(@PathVariable("urlSetName") String urlSetName) {
-        return new ResponseEntity<>(urlSetRepository.findById(urlSetName).get(), HttpStatus.OK);
+        Optional<Urlset> urlset = urlSetRepository.findById(urlSetName);
+        if (!urlset.isPresent()) {
+            return new ResponseEntity<>("Urlset / Tenant '" + urlSetName + "' doesn't exist."
+                    , HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(urlset.get(), HttpStatus.OK);
     }
 
     /**
@@ -251,9 +289,14 @@ public class SitemapRestController {
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}")
     @ResponseBody
     public ResponseEntity deleteUrlSet(@PathVariable("urlSetName") String urlSetName) {
-        urlSetRepository.delete(urlSetRepository.findById(urlSetName).get());
+        Optional<Urlset> urlset = urlSetRepository.findById(urlSetName);
+        if (!urlset.isPresent()) {
+            return new ResponseEntity<>("Urlset / Tenant '" + urlSetName + "' doesn't exist."
+                    , HttpStatus.NOT_FOUND);
+        }
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        urlSetRepository.delete(urlset.get());
+        return new ResponseEntity<>("Urlset / Tenant '" + urlSetName + "' deleted.", HttpStatus.NO_CONTENT);
     }
 
     /**

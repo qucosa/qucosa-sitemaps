@@ -133,7 +133,7 @@ public class UrlRestIT {
                 .statusCode(equalTo(HttpStatus.NO_CONTENT.value()));
 
         when().get(URLSET_SLUB_JSON).then()
-                .statusCode(equalTo(HttpStatus.NOT_ACCEPTABLE.value()));
+                .statusCode(equalTo(HttpStatus.NOT_FOUND.value()));
     }
 
     @Test
