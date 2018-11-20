@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -90,47 +91,63 @@ public class SitemapRestController {
             , produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity modifyUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-        Url modifyUrl = urlRepository.findById(url.getLoc()).get();
 
-        if (modifyUrl.getUrlset().getUri().equals(urlSetName)) {
-            if (!Utils.empty(url.getUrlset().getUri())) {
-                // check if urlset that was set in url-object in request exists in urlSetRepository
-                if (Utils.empty(urlSetRepository.findById(url.getUrlset().getUri()).get().getUri())) {
-                    modifyUrl.setUrlset(urlSetRepository.findById(url.getUrlset().getUri()).get());
-                } else {
-                    return new ResponseEntity<>("Urlset (url->urlset->uri) set in Url-Object in Request doesn't exist.", HttpStatus.NOT_FOUND);
-                }
-            }
-            // set lastmod to current time if not given
-            if (!Utils.empty(url.getLastmod())) {
-                modifyUrl.setLastmod(url.getLastmod());
-            } else {
-                modifyUrl.setLastmod(Utils.getCurrentW3cDatetime());
-            }
-            if (!Utils.empty(url.getChangefreq())) {
-                modifyUrl.setChangefreq(url.getChangefreq());
-            }
-            if (!Utils.empty(url.getPriority())) {
-                modifyUrl.setPriority(url.getPriority());
-            }
 
-            urlRepository.save(modifyUrl);
-            Urlset urlset = urlSetRepository.findById(urlSetName).get();
-            urlset.setLastmod(Utils.getCurrentW3cDatetime());
-            urlset.getUrlList().add(modifyUrl);
-            urlSetRepository.save(urlset);
-        } else {
-            return new ResponseEntity<>("Url doesn't exist in " + urlSetName + ".", HttpStatus.NOT_FOUND);
+        if (Utils.empty(url.getLoc())) {
+            return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(url, HttpStatus.CREATED);
+        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
+        if (!containgUrlSet.isPresent()) {
+            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Url> urlToBeModified = urlRepository.findById(url.getLoc());
+        if (!urlToBeModified.isPresent()) {
+            return new ResponseEntity<>("Url " + url.getLoc() + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+
+        Url modifyUrl = urlRepository.findById(url.getLoc()).get();
+        Urlset set = urlSetRepository.findById(urlSetName).get();
+
+        boolean urlsetNotContainsUrl = true;
+        for (Url urlInSet : set.getUrlList()) {
+            if (urlInSet.getLoc().equals(modifyUrl.getLoc())) {
+                urlsetNotContainsUrl = false;
+            }
+        }
+
+        if (urlsetNotContainsUrl) {
+            return new ResponseEntity<>("Url " + modifyUrl.getLoc() + " doesn't exist in urlset (tenant) " + urlSetName
+                    , HttpStatus.BAD_REQUEST);
+        }
+
+        modifyUrl.setUrlset(set);
+        // set lastmod to current time if not given
+        if (!Utils.empty(url.getLastmod())) {
+            modifyUrl.setLastmod(url.getLastmod());
+        } else {
+            modifyUrl.setLastmod(Utils.getCurrentW3cDatetime());
+        }
+        if (!Utils.empty(url.getChangefreq())) {
+            modifyUrl.setChangefreq(url.getChangefreq());
+        }
+        if (!Utils.empty(url.getPriority())) {
+            modifyUrl.setPriority(url.getPriority());
+        }
+
+        urlRepository.save(modifyUrl);
+        Urlset urlset = urlSetRepository.findById(urlSetName).get();
+        urlset.getUrlList().add(modifyUrl);
+        urlSetRepository.save(urlset);
+
+        return new ResponseEntity<>(modifyUrl, HttpStatus.OK);
     }
 
     /**
      * url-operation to
      * delete url in given urlSetName
      */
-//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/{url}")
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urls) {

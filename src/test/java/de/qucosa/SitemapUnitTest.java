@@ -30,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = Application.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@TestPropertySource("classpath:application.properties")
 public class SitemapUnitTest {
     @Autowired
     MockMvc mvc;
@@ -112,6 +115,41 @@ public class SitemapUnitTest {
                 , urlSetRepository.findAll().contains(urlset));
     }
 
+    @Test
+    public void url_lastmod_date_is_modified() throws Exception {
+        create_urlset(urlset);
+        create_url(url, "slub");
+        Url createdUrl = urlRepository.findById(url.getLoc()).get();
+
+        assertTrue(createdUrl.getLastmod().equals("2018-10-10"));
+
+        //change lastmod
+        createdUrl.setLastmod("2018-11-11");
+        modify_url("slub", createdUrl);
+
+        Url modifiedUrl = urlRepository.findById(url.getLoc()).get();
+        assertTrue(modifiedUrl.getLastmod().equals("2018-11-11"));
+    }
+
+    // TODO test sitemap/sitemapindex (is xml, is application/xml)
+
+    public void modify_url(String urlsetname, Url url) throws Exception {
+        mvc.perform(put("/urlsets/" + urlsetname)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Utils.toJson(url)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+//                .andExpect(content().json(url.toString()));
+    }
+
+    public void create_urlset(Urlset urlset) throws Exception {
+        mvc.perform(post("/urlsets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Utils.toJson(urlset)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
     private void delete_url(Url url, String urlSetName) throws Exception {
         mvc.perform(delete("/urlsets/" + urlSetName + "/deleteurl")
         .contentType(MediaType.APPLICATION_JSON)
@@ -130,17 +168,8 @@ public class SitemapUnitTest {
         mvc.perform(post("/urlsets/" + urlsetName)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Utils.toJson(url)))
-//                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
-    public void create_urlset(Urlset urlset) throws Exception {
-        mvc.perform(post("/urlsets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(Utils.toJson(urlset)))
-//                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
 }

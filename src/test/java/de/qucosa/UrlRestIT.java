@@ -136,6 +136,37 @@ public class UrlRestIT {
                 .statusCode(equalTo(HttpStatus.NOT_ACCEPTABLE.value()));
     }
 
+    @Test
+    public void is_url_modified() {
+        url.setLastmod("2018-11-11");
+        /* modify valid url in correct urlset responds with OK*/
+        given().contentType(ContentType.JSON).body(url)
+                .when().put(URLSET_SLUB_JSON).then()
+                .statusCode(equalTo(HttpStatus.OK.value()));
+
+        /* modify valid Url in wrong urlset responds with BAD_REQUEST */
+        given().contentType(ContentType.JSON).body(url)
+                .when().put(URLSET_UBL_JSON).then()
+                .statusCode(equalTo(HttpStatus.BAD_REQUEST.value()));
+
+        /* modify valid Url under nonexistent urlset responds with NOT_FOUND */
+        given().contentType(ContentType.JSON).body(url)
+                .when().put("/urlsets/notexistingurlset").then()
+                .statusCode(equalTo(HttpStatus.NOT_FOUND.value()));
+
+        /* modify nonexistent Url responds with NOT_FOUND */
+        url.setLoc("abc");
+        given().contentType(ContentType.JSON).body(url)
+                .when().put(URLSET_SLUB_JSON).then()
+                .statusCode(equalTo(HttpStatus.NOT_FOUND.value()));
+
+        /* modify Url's without "loc"-Element responds with BAD_REQUEST */
+        url.setLoc("");
+        given().contentType(ContentType.JSON).body(url)
+                .when().put(URLSET_SLUB_JSON).then()
+                .statusCode(equalTo(HttpStatus.BAD_REQUEST.value()));
+    }
+
     /**
      * url (children of urlsets) tests
      * ToDo GET for urlset
