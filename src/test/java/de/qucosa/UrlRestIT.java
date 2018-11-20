@@ -203,19 +203,30 @@ public class UrlRestIT {
         given().contentType(ContentType.JSON).body(url4)
                 .when().post(URLSET_SLUB_JSON).then()
                 .statusCode(equalTo(HttpStatus.CREATED.value()));
-
-//        when().get(URLSET_SLUB_JSON +"/fooloc4").then()
-//                .body("loc", equalTo("fooloc4"))
-//                .statusCode(equalTo(HttpStatus.OK.value()));
     }
 
     @Test
-    @Ignore("url's as url parameter don't work")
-    // TODO replace url-parameter by Url-Json-Request-Body as defined in Service (RestController)
+    @Ignore("array-matching is hard..")
     public void is_url_deleted() {
         when().delete(URLSET_SLUB_JSON +"/fooloc").then()
                 .statusCode(equalTo(HttpStatus.NO_CONTENT.value()));
         when().get(URLSET_SLUB_JSON + "/fooloc").then()
                 .statusCode(equalTo(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+    }
+
+    @Test
+    public void get_sitemap_returns_xml() {
+        given().contentType(ContentType.XML)
+                .get(URLSET_SLUB_JSON).then()
+                .statusCode(equalTo(HttpStatus.OK.value()))
+                .contentType(ContentType.XML);
+    }
+
+    @Test
+    public void get_sitemap_index_returns_xml() {
+        given().contentType(ContentType.XML)
+                .get().then()
+                .statusCode(equalTo(HttpStatus.OK.value()))
+                .contentType(ContentType.XML);
     }
 }

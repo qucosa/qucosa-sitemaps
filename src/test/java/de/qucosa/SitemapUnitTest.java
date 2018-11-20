@@ -131,8 +131,6 @@ public class SitemapUnitTest {
         assertTrue(modifiedUrl.getLastmod().equals("2018-11-11"));
     }
 
-    // TODO test sitemap/sitemapindex (is xml, is application/xml)
-
     public void modify_url(String urlsetname, Url url) throws Exception {
         mvc.perform(put("/urlsets/" + urlsetname)
                 .contentType(MediaType.APPLICATION_JSON)

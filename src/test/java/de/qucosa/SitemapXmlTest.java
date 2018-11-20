@@ -37,7 +37,6 @@ public class SitemapXmlTest {
 
     private Urlset urlset = new Urlset("slub");
     private Urlset urlset2 = new Urlset("ubl");
-    private Urlset urlset3 = new Urlset("tuc");
 
     @Test
     public void testTenantSitemap() throws JAXBException, IOException {
