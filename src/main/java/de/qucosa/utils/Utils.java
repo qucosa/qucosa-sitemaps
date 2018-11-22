@@ -24,8 +24,8 @@ public class Utils {
     public static String getCurrentW3cDatetime() {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String w3cDatetimeString = format.format(new Date())+"+00:00";
-        return w3cDatetimeString;
+
+        return format.format(new Date())+"+00:00";
     }
 
     public static boolean empty( final String s ) {

@@ -31,12 +31,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class SitemapXmlTest {
-    private Url url = new Url("https://example.com/landingpage1", "2018-10-10");
-    private Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
-    private Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
+    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
+    private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
+    private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
 
-    private Urlset urlset = new Urlset("slub");
-    private Urlset urlset2 = new Urlset("ubl");
+    private final Urlset urlset = new Urlset("slub");
+    private final Urlset urlset2 = new Urlset("ubl");
 
     @Test
     public void testTenantSitemap() throws JAXBException, IOException {

@@ -57,9 +57,9 @@ public class SitemapRestController {
     private UrlRepository urlRepository;
     // to get server port
     @Autowired
-    Environment environment;
+    private Environment environment;
 
-    public String getHostUrl() {
+    private String getHostUrl() {
         String hosturl;
         if (!Utils.empty(restserverhost)) {
             hosturl = restserverhost + ":" + restserverport + "/";
@@ -123,8 +123,8 @@ public class SitemapRestController {
             return new ResponseEntity<>("Url " + url.getLoc() + " doesn't exist", HttpStatus.NOT_FOUND);
         }
 
-        Url modifyUrl = urlRepository.findById(url.getLoc()).get();
-        Urlset set = urlSetRepository.findById(urlSetName).get();
+        Url modifyUrl = urlToBeModified.get();
+        Urlset set = containgUrlSet.get();
 
         boolean urlsetNotContainsUrl = true;
         for (Url urlInSet : set.getUrlList()) {
@@ -153,9 +153,8 @@ public class SitemapRestController {
         }
 
         urlRepository.save(modifyUrl);
-        Urlset urlset = urlSetRepository.findById(urlSetName).get();
-        urlset.getUrlList().add(modifyUrl);
-        urlSetRepository.save(urlset);
+        set.getUrlList().add(modifyUrl);
+        urlSetRepository.save(set);
 
         return new ResponseEntity<>(modifyUrl, HttpStatus.OK);
     }
@@ -164,16 +163,34 @@ public class SitemapRestController {
      * url-operation to
      * delete url in given urlSetName
      */
+    /* TODO test bulk-delete */
+    /* TODO spring security authorization einbauen */
     @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urls) {
-        for (String url : urls) {
-            Urlset urlset = urlRepository.findById(url).get().getUrlset();
-            urlset.setLastmod(Utils.getCurrentW3cDatetime());
-            urlRepository.delete(urlRepository.findById(url).get());
+    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urlList) {
+        Optional<Urlset> setInRepo = urlSetRepository.findById(urlSetName);
+        if (!setInRepo.isPresent()) {
+            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+        }
+        boolean anyUrlDeleted = false;
+        for (String url : urlList) {
+            Optional<Url> urlInRepo  = urlRepository.findById(url);
+            if (urlInRepo.isPresent()) {
+                setInRepo.get().setLastmod(Utils.getCurrentW3cDatetime());
+                // TODO test if needed
+//                setInRepo.get().getUrlList().remove(urlInRepo.get());
+
+                urlRepository.delete(urlInRepo.get());
+                anyUrlDeleted = true;
+            }
+        }
+        if (anyUrlDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>("None of the Url's could be found in the sitemap-repository"
+                    , HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -222,12 +239,15 @@ public class SitemapRestController {
     /**
      * url-operation to
      * get url in given urlSetName
+     * TODO url as parameter doesn't work
      */
+    /*
     @RequestMapping(method = GET, value = "/urlsets/{urlSetName}/{url}")
     @ResponseBody
     public ResponseEntity getUrl(@PathVariable("urlSetName") String urlSetName, @PathVariable("url") String url) {
         return new ResponseEntity<>(urlRepository.findById(url).get(), HttpStatus.OK);
     }
+    */
 
     /**
      * urlset-operation to

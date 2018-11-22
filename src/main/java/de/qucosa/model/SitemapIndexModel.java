@@ -25,7 +25,7 @@ import java.util.List;
 
 @XmlRootElement(name="sitemapindex")
 public class SitemapIndexModel {
-    List<Urlset> urlset = new ArrayList<Urlset>();
+    private List<Urlset> urlset = new ArrayList<>();
 
     @XmlElement(name="sitemap")
     public List<Urlset> getUrlset() {

@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.hasItems;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource("classpath:application.properties")
-public class UrlRestIT {
+public class SitemapRestIT {
     @Value("${server.port}")
     private int restserverport;
     @Value("${rest.server.host}")
@@ -49,14 +49,14 @@ public class UrlRestIT {
     private static final String URLSET_UBL_JSON = "/urlsets/testubl";
     private static final String URLSET_UBC_JSON = "/urlsets/testubc";
 
-    private Urlset urlset = new Urlset("testslub");
-    private Urlset urlset2 = new Urlset("testubl");
-    private Urlset urlset3 = new Urlset("testubc");
+    private final Urlset urlset = new Urlset("testslub");
+    private final Urlset urlset2 = new Urlset("testubl");
+    private final Urlset urlset3 = new Urlset("testubc");
 
-    private Url url = new Url("https://example.com/landingpage1", "2018-10-10");
-    private Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
-    private Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
-    private Url url4 = new Url("https://example.com/landingpage4", "2018-10-10");
+    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
+    private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
+    private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
+    private final Url url4 = new Url("https://example.com/landingpage4", "2018-10-10");
 
     @Before
     public void setupData() {

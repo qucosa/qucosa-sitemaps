@@ -20,7 +20,6 @@ package de.qucosa.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.qucosa.utils.Utils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

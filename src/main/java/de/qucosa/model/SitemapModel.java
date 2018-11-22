@@ -24,7 +24,7 @@ import java.util.List;
 
 @XmlRootElement(name="urlset")
 public class SitemapModel {
-    List<Url> url = new ArrayList<Url>();
+    private List<Url> url = new ArrayList<>();
 
     public List<Url> getUrl() {
         return this.url;
@@ -34,7 +34,7 @@ public class SitemapModel {
         this.url = url;
     }
 
-    List<Urlset> urlset = new ArrayList<>();
+    private List<Urlset> urlset = new ArrayList<>();
 
     public List<Urlset> getUrlset() {
         return urlset;

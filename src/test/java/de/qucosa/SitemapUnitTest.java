@@ -49,19 +49,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("classpath:application.properties")
 public class SitemapUnitTest {
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
     @Autowired
-    UrlSetRepository urlSetRepository;
+    private UrlSetRepository urlSetRepository;
     @Autowired
-    UrlRepository urlRepository;
+    private UrlRepository urlRepository;
 
-    private Url url = new Url("https://example.com/landingpage1", "2018-10-10");
-    private Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
-    private Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
+    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
+    private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
+    private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
 
-    private Urlset urlset = new Urlset("slub");
-    private Urlset urlset2 = new Urlset("ubl");
-    private Urlset urlset3 = new Urlset("tuc");
+    private final Urlset urlset = new Urlset("slub");
+    private final Urlset urlset2 = new Urlset("ubl");
+    private final Urlset urlset3 = new Urlset("tuc");
 
     @After
     public void cleanup_setup() {
@@ -131,7 +131,7 @@ public class SitemapUnitTest {
         assertTrue(modifiedUrl.getLastmod().equals("2018-11-11"));
     }
 
-    public void modify_url(String urlsetname, Url url) throws Exception {
+    private void modify_url(String urlsetname, Url url) throws Exception {
         mvc.perform(put("/urlsets/" + urlsetname)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Utils.toJson(url)))
@@ -140,7 +140,7 @@ public class SitemapUnitTest {
 //                .andExpect(content().json(url.toString()));
     }
 
-    public void create_urlset(Urlset urlset) throws Exception {
+    private void create_urlset(Urlset urlset) throws Exception {
         mvc.perform(post("/urlsets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Utils.toJson(urlset)))
