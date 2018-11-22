@@ -25,6 +25,7 @@ import de.qucosa.repository.UrlRepository;
 import de.qucosa.repository.UrlSetRepository;
 import de.qucosa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,7 +47,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class SitemapRestController {
-
+    @Value("${server.port}")
+    private int restserverport;
+    @Value("${rest.server.host}")
+    private String restserverhost;
     @Autowired
     private UrlSetRepository urlSetRepository;
     @Autowired
@@ -56,8 +60,13 @@ public class SitemapRestController {
     Environment environment;
 
     public String getHostUrl() {
-        String ip = InetAddress.getLoopbackAddress().getHostAddress();
-        String hosturl = ip+":"+environment.getProperty("local.server.port")+"/";
+        String hosturl;
+        if (!Utils.empty(restserverhost)) {
+            hosturl = restserverhost + ":" + restserverport + "/";
+        } else {
+            String ip = InetAddress.getLoopbackAddress().getHostAddress();
+            hosturl = ip+":"+environment.getProperty("local.server.port")+"/";
+        }
         return hosturl;
     }
 

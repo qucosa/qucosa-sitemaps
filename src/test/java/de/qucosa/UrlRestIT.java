@@ -169,7 +169,7 @@ public class UrlRestIT {
 
     /**
      * url (children of urlsets) tests
-     * ToDo GET for urlset
+     * ToDo implement GET for urlset
      */
     @Test
     @Ignore("array-matching is hard..")
