@@ -8,6 +8,7 @@
     <artifactId>qucosa-sitemaps</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -76,6 +77,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
             </plugin>
         </plugins>
     </build>
