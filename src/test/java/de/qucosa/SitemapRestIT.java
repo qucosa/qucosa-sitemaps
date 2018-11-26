@@ -225,7 +225,7 @@ public class SitemapRestIT {
     @Test
     public void get_sitemap_index_returns_xml() {
         given().contentType(ContentType.XML)
-                .get().then()
+                .get("/urlsets").then()
                 .statusCode(equalTo(HttpStatus.OK.value()))
                 .contentType(ContentType.XML);
     }
