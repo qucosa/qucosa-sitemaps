@@ -32,7 +32,7 @@
 
 # install maven, git and postgresql-db and checkout/build/package sitemap maven project
 - name: install maven and git
-  become: yes
+#  become: yes
   apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
   with_items:
     - maven
@@ -43,39 +43,43 @@
 
 - git:
     repo: 'https://github.com/qucosa/qucosa-sitemaps.git'
-    dest: /home/tolksdorf/qucosa-sitemaps
+    dest: "{{ project_directory }}"
     force: yes
 
 - name: build project
-  become: yes
+#  become: yes
   shell: |
-    cd /home/tolksdorf/qucosa-sitemaps
+    cd {{ project_directory }}
     mvn clean package
 
-- name: set owner for directory
-  become: yes
-  file:
-    path: /home/tolksdorf/qucosa-sitemaps
-    owner: tolksdorf
-    group: tolksdorf
-    mode: 0755
-    recurse: yes
-
-- name: setup postgresql-user
-  become: yes
-#  become_user: postgres
-  postgresql_user:
-    name: qucosa
-    password: qucosa
-    role_attr_flags: CREATEDB
+#- name: set owner for directory
+#  become: yes
+#  file:
+#    path: /home/tolksdorf/qucosa-sitemaps
+#    owner: tolksdorf
+#    group: tolksdorf
+#    mode: 0755
+#    recurse: yes
 
 - name: setup postgresql-db
-  become: yes
   postgresql_db:
     name: qucosa_sitemap
-    login_user: qucosa
-    login_password: qucosa
+#    login_user: qucosa
+#    login_password: qucosa
     encoding: UTF-8
     lc_collate: en_US.utf8
     lc_ctype: en_US.utf8
     template: template0
+  become: yes
+  become_user: postgres
+
+- name: setup postgresql-user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: qucosa
+    password: qucosa
+    db: qucosa_sitemap
+    priv: ALL
+#    role_attr_flags: CREATEDB
+

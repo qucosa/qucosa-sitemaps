@@ -1,0 +1,22 @@
+- name: Setup machine with java/maven/git and the project
+  hosts: "{{ host }}"
+  remote_user: tolksdorf
+  become: yes
+  vars:
+    project_directory: /tmp/qucosa-sitemaps
+  roles:
+    - java
+
+- name: deploy springboot-sitemapservice as daemon/service
+  hosts: "{{ host }}"
+  remote_user: tolksdorf
+  become: yes
+  vars:
+    project_directory: /tmp/qucosa-sitemaps
+    springboot_application_name: qucosa-sitemaps
+    springboot_src_file: "{{ project_directory }}/target/qucosa-sitemaps-1.0-SNAPSHOT.jar"
+    springboot_user: sitemapservice
+    springboot_group: sitemapservice
+  roles:
+    - ansible-springboot
+

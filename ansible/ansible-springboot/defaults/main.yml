@@ -21,7 +21,7 @@ springboot_configuration_template:
 springboot_deploy_folder: /opt/{{ springboot_application_name }}
 
 # linux user to start the service
-springboot_user: restservice
+springboot_user: sitemapservice
 
 # linux group to start the service
-springboot_group: restservice
+springboot_group: sitemapservice
