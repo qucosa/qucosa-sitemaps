@@ -9,7 +9,10 @@
  - deploy springboot-application(jar) as service / daemon
 # Run (only works with ssh-key stored for user)
 ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass
-ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod"
+# Run (works with password auth)
+ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod, ssh_user=tolksdorf"
+ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod, ssh_user=tolksdorf
+, gitlab_user=tolksdorf, gitlab_pw=xxx"
 
 # Run with Vagrant
 ansible-playbook --private-key=~/Projekte/sitemap-vagrant/.vagrant/machines/standalone/virtualbox/private_key -u vagrant deploy_sitemap.yml -vvv

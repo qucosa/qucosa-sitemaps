@@ -17,7 +17,7 @@
     dest: /etc/environment
     state: present
     regexp: '^JAVA_HOME'
-    line: 'JAVA_HOME=/usr/lib/jvm/default-java/bin'
+    line: 'JAVA_HOME=/usr/lib/jvm/default-java'
 
 - name: copy java oracle
   copy:
@@ -30,7 +30,7 @@
   yum: name=/tmp/{{ java_rpm }}
   when: java_rpm_install == true
 
-# install maven, git and postgresql-db and checkout/build/package sitemap maven project
+# install maven, git and postgresql-db
 - name: install maven and git
 #  become: yes
   apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
@@ -41,15 +41,26 @@
     - postgresql-contrib
     - python-psycopg2
 
+# checkout/build/package sitemap maven project
 - git:
     repo: 'https://github.com/qucosa/qucosa-sitemaps.git'
     dest: "{{ project_directory }}"
     force: yes
 
-- name: build project
+- name: build project qucosa-sitemap-REST-service
 #  become: yes
   shell: |
     cd {{ project_directory }}
+    mvn clean package
+
+- git:
+    repo: "https://{{ gitlab_user }}:{{ gitlab_pw }}@git.slub-dresden.de/tolksdorf/qucosa-sitemap-feeder.git"
+    dest: "{{ project_directory2 }}"
+    force: yes
+
+- name: build project qucosa-sitemap-feeder
+  shell: |
+    cd {{ project_directory2 }}
     mvn clean package
 
 #- name: set owner for directory
