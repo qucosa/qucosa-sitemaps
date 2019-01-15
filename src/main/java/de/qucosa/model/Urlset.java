@@ -21,6 +21,7 @@ package de.qucosa.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import de.qucosa.utils.Utils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,6 +32,7 @@ import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,10 +75,16 @@ public class Urlset implements Serializable {
 
     @XmlTransient
     public List<Url> getUrlList() {
+        if (urlList == null) {
+            urlList = new ArrayList<>();
+        }
         return urlList;
     }
 
     public void addUrl(Url url) {
+        if (urlList == null) {
+            urlList = new ArrayList<>();
+        }
         this.urlList.add(url);
     }
 
@@ -85,6 +93,9 @@ public class Urlset implements Serializable {
     }
 
     public void setUrlList(List<Url> urlList) {
+        if (urlList == null) {
+            urlList = new ArrayList<>();
+        }
         this.urlList = urlList;
     }
 

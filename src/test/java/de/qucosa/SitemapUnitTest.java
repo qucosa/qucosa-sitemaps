@@ -72,7 +72,8 @@ public class SitemapUnitTest {
     @Test
     public void urlset_is_created() throws Exception {
         create_urlset(urlset);
-        assertTrue("UrlsetRepository doesn't have item 'slub'", urlSetRepository.findById("slub").get().getUri().equals("slub"));
+        assertTrue("UrlsetRepository doesn't have item 'slub'"
+                , urlSetRepository.findById("slub").get().getUri().equals("slub"));
     }
 
     @Test
@@ -84,6 +85,28 @@ public class SitemapUnitTest {
                 , urlRepository.findById(url.getLoc()).get().getLoc().equals("https://example.com/landingpage1"));
         assertTrue("UrlsetRepository doesn't have item 'https://example.com/landingpage1' in slub-set."
                 , urlSetRepository.findById("slub").get().getUrlList().contains(url));
+    }
+
+    @Test
+    public void modifying_url_creates_urlset_if_not_existent() throws Exception {
+        modify_non_existent_url("slub", url);
+
+        assertTrue("Urlset 'slub' doesn't exist.", urlSetRepository.findById("slub").isPresent());
+    }
+
+    @Test
+    public void modify_non_existent_url_creates_url() throws Exception {
+        create_urlset(urlset);
+        modify_non_existent_url("slub", url);
+
+        assertTrue("UrlRepository doesn't have Url 'https://example.com/landingpage1'"
+                , urlRepository.findById(url.getLoc()).get().getLoc().equals(url.getLoc()));
+
+        url.setLastmod("2019-01-01");
+        modify_existent_url("slub", url);
+
+        assertTrue("UrlRepository doesn't have Url 'https://example.com/landingpage1'"
+                , urlRepository.findById(url.getLoc()).get().getLastmod().equals("2019-01-01"));
     }
 
     @Test
@@ -125,19 +148,26 @@ public class SitemapUnitTest {
 
         //change lastmod
         createdUrl.setLastmod("2018-11-11");
-        modify_url("slub", createdUrl);
+        modify_existent_url("slub", createdUrl);
 
         Url modifiedUrl = urlRepository.findById(url.getLoc()).get();
         assertTrue(modifiedUrl.getLastmod().equals("2018-11-11"));
     }
 
-    private void modify_url(String urlsetname, Url url) throws Exception {
+    private void modify_existent_url(String urlsetname, Url url) throws Exception {
         mvc.perform(put("/urlsets/" + urlsetname)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Utils.toJson(url)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-//                .andExpect(content().json(url.toString()));
+    }
+
+    private void modify_non_existent_url(String urlsetname, Url url) throws Exception {
+        mvc.perform(put("/urlsets/" + urlsetname)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Utils.toJson(url)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     private void create_urlset(Urlset urlset) throws Exception {

@@ -86,17 +86,29 @@ public class SitemapRestController {
             url.setLastmod(Utils.getCurrentW3cDatetime());
         }
 
+        // create Urlset if it doesn't exist
         Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
+
         if (!containgUrlSet.isPresent()) {
-            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+            // set uri / tenant-name
+            Urlset urlsetToCreate = new Urlset(urlSetName);
+            // set location
+            urlsetToCreate.setLoc(getHostUrl() + "urlsets/" + urlSetName);
+            // set lastmod
+            if (url.getLastmod().isEmpty()) {
+                url.setLastmod(Utils.getCurrentW3cDatetime());
+            }
+
+            urlSetRepository.save(urlsetToCreate);
         }
-        Urlset urlsetToModify = containgUrlSet.get();
-        url.setUrlset(urlsetToModify);
+
+        Urlset actualUrlset = urlSetRepository.findById(urlSetName).get();
+        url.setUrlset(actualUrlset);
 
         urlRepository.save(url);
-        urlsetToModify.getUrlList().add(url);
-        urlsetToModify.setLastmod(Utils.getCurrentW3cDatetime());
-        urlSetRepository.save(urlsetToModify);
+        actualUrlset.getUrlList().add(url);
+        actualUrlset.setLastmod(Utils.getCurrentW3cDatetime());
+        urlSetRepository.save(actualUrlset);
 
         return new ResponseEntity<>(url, HttpStatus.CREATED);
     }
@@ -113,50 +125,61 @@ public class SitemapRestController {
             return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
         }
 
+        // create Urlset if it doesn't exist
         Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
+
         if (!containgUrlSet.isPresent()) {
-            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
+            // set uri / tenant-name
+            Urlset urlsetToCreate = new Urlset(urlSetName);
+            // set location
+            urlsetToCreate.setLoc(getHostUrl() + "urlsets/" + urlSetName);
+            // set lastmod
+            urlsetToCreate.setLastmod(Utils.getCurrentW3cDatetime());
+
+            urlSetRepository.save(urlsetToCreate);
         }
+
+        Urlset actualUrlset = urlSetRepository.findById(urlSetName).get();
 
         Optional<Url> urlToBeModified = urlRepository.findById(url.getLoc());
         if (!urlToBeModified.isPresent()) {
-            return new ResponseEntity<>("Url " + url.getLoc() + " doesn't exist", HttpStatus.NOT_FOUND);
-        }
-
-        Url modifyUrl = urlToBeModified.get();
-        Urlset set = containgUrlSet.get();
-
-        boolean urlsetNotContainsUrl = true;
-        for (Url urlInSet : set.getUrlList()) {
-            if (urlInSet.getLoc().equals(modifyUrl.getLoc())) {
-                urlsetNotContainsUrl = false;
+            url.setUrlset(actualUrlset);
+            // set lastmod to current time if not given
+            if (Utils.empty(url.getLastmod())) {
+                url.setLastmod(Utils.getCurrentW3cDatetime());
             }
-        }
 
-        if (urlsetNotContainsUrl) {
-            return new ResponseEntity<>("Url " + modifyUrl.getLoc() + " doesn't exist in urlset (tenant) " + urlSetName
-                    , HttpStatus.BAD_REQUEST);
-        }
+            urlRepository.save(url);
+            actualUrlset.addUrl(url);
+            actualUrlset.getUrlList().add(url);
+            actualUrlset.setLastmod(Utils.getCurrentW3cDatetime());
+            urlSetRepository.save(actualUrlset);
 
-        modifyUrl.setUrlset(set);
-        // set lastmod to current time if not given
-        if (!Utils.empty(url.getLastmod())) {
-            modifyUrl.setLastmod(url.getLastmod());
+            return new ResponseEntity<>("Url could not be modified, because it did not exist." +
+                    " Therefore created Url: " + url.getLoc(), HttpStatus.CREATED);
         } else {
-            modifyUrl.setLastmod(Utils.getCurrentW3cDatetime());
-        }
-        if (!Utils.empty(url.getChangefreq())) {
-            modifyUrl.setChangefreq(url.getChangefreq());
-        }
-        if (!Utils.empty(url.getPriority())) {
-            modifyUrl.setPriority(url.getPriority());
-        }
+            Url actualUrl = urlRepository.findById(url.getLoc()).get();
 
-        urlRepository.save(modifyUrl);
-        set.getUrlList().add(modifyUrl);
-        urlSetRepository.save(set);
+            actualUrl.setUrlset(actualUrlset);
+            // set lastmod to current time if not given
+            if (!Utils.empty(url.getLastmod())) {
+                actualUrl.setLastmod(url.getLastmod());
+            } else {
+                actualUrl.setLastmod(Utils.getCurrentW3cDatetime());
+            }
+            if (!Utils.empty(url.getChangefreq())) {
+                actualUrl.setChangefreq(url.getChangefreq());
+            }
+            if (!Utils.empty(url.getPriority())) {
+                actualUrl.setPriority(url.getPriority());
+            }
 
-        return new ResponseEntity<>(modifyUrl, HttpStatus.OK);
+            urlRepository.save(actualUrl);
+            actualUrlset.getUrlList().add(actualUrl);
+            urlSetRepository.save(actualUrlset);
+
+            return new ResponseEntity<>(actualUrl, HttpStatus.OK);
+        }
     }
 
     /**
@@ -264,7 +287,6 @@ public class SitemapRestController {
         }
 
         /* TODO hostauflösung überprüfen */
-        // set location for urlset, correlates to "localhost:8080" + "slub"
         urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
         urlset.setLastmod(Utils.getCurrentW3cDatetime());
         urlSetRepository.save(urlset);
