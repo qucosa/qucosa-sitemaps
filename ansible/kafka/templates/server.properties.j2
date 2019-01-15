@@ -36,7 +36,7 @@ auto.create.topics.enable={{ kafka_auto_create_topics }}
 #     listeners = PLAINTEXT://your.host.name:9092
 # listeners=PLAINTEXT://{{ kafka_host_name }}:{{ kafka_port }}
 listeners=INTERNAL://0.0.0.0:19092,EXTERNAL://0.0.0.0:9092
-listeners.security.protocol.map=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+listener.security.protocol.map=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
