@@ -158,7 +158,7 @@ public class SitemapRestController {
             return new ResponseEntity<>("Url could not be modified, because it did not exist." +
                     " Therefore created Url: " + url.getLoc(), HttpStatus.CREATED);
         } else {
-            Url actualUrl = urlRepository.findById(url.getLoc()).get();
+            Url actualUrl = urlToBeModified.get();
 
             actualUrl.setUrlset(actualUrlset);
             // set lastmod to current time if not given
