@@ -246,11 +246,6 @@ public class SitemapRestController {
             setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
             setInRepo.getUrlList().remove(urlInRepo);
             urlSetRepository.save(setInRepo);
-//            urlRepository.delete(urlRepository.findById(url.getLoc()).get());
-//            urlRepository.delete(urlInRepo);
-//            setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
-//            setInRepo.getUrlList().remove(url);
-//            urlSetRepository.save(setInRepo);
 
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {

@@ -64,6 +64,7 @@ kafka_port: 9092
 # kafka_advertised_listeners: PLAINTEXT://sdvcmr-prod-core02.slub-dresden.de:9092
 # solution for remote-connection to kafka
 kafka_advertised_listeners: INTERNAL://127.0.0.1:19092,EXTERNAL://sdvcmr-prod-core02.slub-dresden.de:9092
+#kafka_advertised_listeners: INTERNAL://127.0.0.1:19092,EXTERNAL://sdvcmr-app04.slub-dresden.de:9092
 
 # The number of threads handling network requests
 kafka_num_network_threads: 3
