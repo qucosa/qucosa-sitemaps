@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = Application.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-@TestPropertySource("classpath:application.properties")
+@TestPropertySource("classpath:application-test.properties")
 public class SitemapUnitTest {
     @Autowired
     private MockMvc mvc;
