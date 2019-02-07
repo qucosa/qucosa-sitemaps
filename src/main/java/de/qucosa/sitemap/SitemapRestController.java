@@ -47,17 +47,23 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class SitemapRestController {
-    @Value("${server.port}")
+
     private int restserverport;
-    @Value("${rest.server.host}")
     private String restserverhost;
-    @Autowired
     private UrlSetRepository urlSetRepository;
-    @Autowired
     private UrlRepository urlRepository;
     // to get server port
-    @Autowired
     private Environment environment;
+
+    @Autowired
+    public SitemapRestController(UrlSetRepository urlSetRepository, UrlRepository urlRepository, Environment environment
+        , @Value("${rest.server.host}") final String restserverhost, @Value("${server.port}") final int restserverport) {
+        this.urlSetRepository = urlSetRepository;
+        this.urlRepository = urlRepository;
+        this.environment = environment;
+        this.restserverhost = restserverhost;
+        this.restserverport = restserverport;
+    }
 
     private String getHostUrl() {
         String hosturl;

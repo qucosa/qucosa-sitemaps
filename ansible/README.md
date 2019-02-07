@@ -11,8 +11,7 @@
 ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass
 # Run (works with password auth)
 ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod ssh_user=tolksdorf"
-ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod ssh_user=tolksdorf
- gitlab_user=tolksdorf gitlab_pw=xxx"
+ansible-playbook deploy_sitemap.yml -u tolksdorf --ask-become-pass -i hosts.ini --extra-vars "host=sitemapprod ssh_user=tolksdorf gitlab_user=tolksdorf gitlab_pw=xxx"
 
 # Run with Vagrant
 ansible-playbook --private-key=~/Projekte/sitemap-vagrant/.vagrant/machines/standalone/virtualbox/private_key -u vagrant deploy_sitemap.yml -vvv
