@@ -1,9 +1,3 @@
-# is openjdk-8
-java_packages: default-jdk
-
-java_rpm_install: false
-java_rpm: jdk-8u161-linux-x64.rpm
-
 # linux user to start the service
 springboot_user: sitemapservice
 

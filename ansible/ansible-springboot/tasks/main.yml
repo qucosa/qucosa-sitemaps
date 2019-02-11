@@ -34,6 +34,13 @@
     owner: "{{ springboot_user }}"
     group: "{{ springboot_group }}"
 
+- name: "Create config folder in {{ springboot_deploy_folder }}"
+  file:
+    path: "{{ springboot_deploy_folder }}/config"
+    state: directory
+    owner: "{{ springboot_user }}"
+    group: "{{ springboot_group }}"
+
 - name: "Copy jar application"
   copy:
     remote_src: true
@@ -57,12 +64,25 @@
   notify:
     - "Restart application"
 
-- name: "Deploy app properties"
-  template:
+#- name: "Deploy app properties"
+#  template:
+#    src: "{{ springboot_propertyfile_template }}"
+#    dest: "{{ springboot_deploy_folder }}"
+#    owner: "{{ springboot_user }}"
+#    group: "{{ springboot_group }}"
+#    mode: 0755
+#  when: springboot_propertyfile_template and springboot_propertyfile_template != ''
+#  notify:
+#    - "Restart application"
+
+- name: "copy app properties to app-directory {{ springboot_deploy_folder }}/config"
+  copy:
+    remote_src: yes
     src: "{{ springboot_propertyfile_template }}"
-    dest: "{{ springboot_deploy_folder }}"
+    dest: "{{ springboot_deploy_folder }}/config/application.properties"
     owner: "{{ springboot_user }}"
     group: "{{ springboot_group }}"
+    mode: 0755
   when: springboot_propertyfile_template and springboot_propertyfile_template != ''
   notify:
     - "Restart application"

@@ -16,7 +16,7 @@
     project_directory: /tmp/qucosa-sitemaps
     springboot_application_name: qucosa-sitemaps
     springboot_src_file: "{{ project_directory }}/target/qucosa-sitemaps-1.0-SNAPSHOT.jar"
-    springboot_propertyfile_template: "{{ project_directory }}/src/main/resources/{{ application_properties_file }}"
+    springboot_propertyfile_template: "/tmp/{{ springboot_application_name }}/src/main/resources/{{ application_properties_file }}"
     springboot_user: sitemapservice
     springboot_group: sitemapservice
   roles:
@@ -37,7 +37,7 @@
     project_directory: /tmp/qucosa-sitemap-feeder
     springboot_application_name: qucosa-sitemap-feeder
     springboot_src_file: "{{ project_directory }}/target/qucosa-sitemap-feeder-1.0-SNAPSHOT.jar"
-    springboot_propertyfile_template: "{{ project_directory }}/src/main/resources/{{ application_properties_file }}"
+    springboot_propertyfile_template: "/tmp/{{ springboot_application_name }}/src/main/resources/{{ application_properties_file }}"
     springboot_user: sitemapservice
     springboot_group: sitemapservice
   roles:

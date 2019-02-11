@@ -71,6 +71,21 @@
 #    group: tolksdorf
 #    mode: 0755
 #    recurse: yes
+- name: change permissions for project {{ project_directory2 }}
+  file:
+    dest: "{{ project_directory2 }}"
+    recurse: yes
+    group: "{{ springboot_group }}"
+    owner: "{{ springboot_user }}"
+    mode: 0755
+
+- name: change permissions for project {{ project_directory }}
+  file:
+    dest: "{{ project_directory }}"
+    recurse: yes
+    group: "{{ springboot_group }}"
+    owner: "{{ springboot_user }}"
+    mode: 0755
 
 - name: setup postgresql-db
   postgresql_db:
