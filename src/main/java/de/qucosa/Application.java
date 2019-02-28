@@ -1,4 +1,4 @@
-package de.qucosa;/*
+/*
  * Copyright (C) 2016 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,6 +14,7 @@ package de.qucosa;/*
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+package de.qucosa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

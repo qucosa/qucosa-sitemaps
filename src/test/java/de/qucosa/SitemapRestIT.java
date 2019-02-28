@@ -27,6 +27,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -38,11 +40,14 @@ import static org.hamcrest.Matchers.hasItems;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource("classpath:application-test.properties")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SitemapRestIT {
     @Value("${server.port}")
     private int restserverport;
     @Value("${rest.server.host}")
     private String restserverhost;
+    @LocalServerPort
+    private int port;
 
     private static final String URLSETS_ENDPOINT = "/urlsets";
     private static final String URLSET_SLUB_JSON = "/urlsets/testslub";
@@ -60,7 +65,7 @@ public class SitemapRestIT {
 
     @Before
     public void setupData() {
-        RestAssured.port = restserverport;
+        RestAssured.port = port;
         RestAssured.baseURI = restserverhost;
         create_urlsets();
         create_urls();
