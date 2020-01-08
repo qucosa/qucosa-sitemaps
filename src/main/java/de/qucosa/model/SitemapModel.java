@@ -18,7 +18,7 @@
 package de.qucosa.model;
 
 import de.qucosa.repository.model.Url;
-import de.qucosa.repository.model.Urlset;
+import de.qucosa.repository.model.UrlSet;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -37,13 +37,13 @@ public class SitemapModel {
         this.url = url;
     }
 
-    private List<Urlset> urlset = new ArrayList<>();
+    private List<UrlSet> urlset = new ArrayList<>();
 
-    public List<Urlset> getUrlset() {
+    public List<UrlSet> getUrlset() {
         return urlset;
     }
 
-    public void setUrlset(List<Urlset> urlset) {
+    public void setUrlset(List<UrlSet> urlset) {
         this.urlset = urlset;
     }
 }
