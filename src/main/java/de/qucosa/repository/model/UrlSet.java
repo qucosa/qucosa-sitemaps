@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Urlset implements Serializable {
+public class UrlSet implements Serializable {
     private String uri;
 
     private String loc;
@@ -36,11 +36,11 @@ public class Urlset implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Url> urlList;
 
-    public Urlset(String uri) {
+    public UrlSet(String uri) {
         this.uri = uri;
     }
 
-    public Urlset() { super(); }
+    public UrlSet() { super(); }
 
     public void setUri(String uri) {
         this.uri = uri;
