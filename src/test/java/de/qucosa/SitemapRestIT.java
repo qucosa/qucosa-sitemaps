@@ -19,8 +19,8 @@ package de.qucosa;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import de.qucosa.model.Url;
-import de.qucosa.model.Urlset;
+import de.qucosa.repository.model.Url;
+import de.qucosa.repository.model.Urlset;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

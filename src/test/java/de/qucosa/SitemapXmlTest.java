@@ -19,8 +19,8 @@ package de.qucosa;
 
 import de.qucosa.model.SitemapIndexModel;
 import de.qucosa.model.SitemapModel;
-import de.qucosa.model.Url;
-import de.qucosa.model.Urlset;
+import de.qucosa.repository.model.Url;
+import de.qucosa.repository.model.Urlset;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;

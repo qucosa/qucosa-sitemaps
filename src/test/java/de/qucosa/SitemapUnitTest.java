@@ -17,10 +17,8 @@
 
 package de.qucosa;
 
-import de.qucosa.model.Url;
-import de.qucosa.model.Urlset;
-import de.qucosa.repository.UrlRepository;
-import de.qucosa.repository.UrlSetRepository;
+import de.qucosa.repository.model.Url;
+import de.qucosa.repository.model.Urlset;
 import de.qucosa.utils.Utils;
 import org.junit.After;
 import org.junit.Test;
