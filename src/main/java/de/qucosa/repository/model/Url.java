@@ -15,52 +15,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.qucosa.model;
+package de.qucosa.repository.model;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.Objects;
 
-@Entity
 public class Url implements Serializable {
-    @ManyToOne
-    @JoinColumn(name="urlset_uri", referencedColumnName = "uri")
-    @JsonBackReference
-//    @JsonIgnore
     private Urlset urlset;
-    @Id
+
     private String loc;
+
     private String lastmod;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String changefreq;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String priority;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Url url = (Url) o;
-        return Objects.equals(loc, url.loc);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(loc);
-    }
-
-    public Url() {
-        super();
-    }
 
     public Url(String loc, String lastmod) {
         this.loc = loc;

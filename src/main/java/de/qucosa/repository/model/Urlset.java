@@ -15,46 +15,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.qucosa.model;
-
+package de.qucosa.repository.model;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import de.qucosa.utils.Utils;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-@Entity
 public class Urlset implements Serializable {
-    @Id
-    @Column(name="uri")
     private String uri;
 
     private String loc;
 
     private String lastmod;
 
-    /**
-     * parameter orphanRemoval to cascade the remove operation on both entities "Url" and "Urlset",
-     * otherwise deleting an Url from both repositories in the Spring Boot SitemapRestController doesn't work.
-     *
-     * parameter fetch set to "Eager" to handout url-list (i.e. for the sitemap)
-     * which otherwise can't be loaded in "Lazy"-fetchtype
-     */
-    @OneToMany(mappedBy = "urlset", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Url> urlList;
 
@@ -115,19 +93,5 @@ public class Urlset implements Serializable {
 
     public void setLoc(String loc) {
         this.loc = loc;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Urlset urlset = (Urlset) o;
-        return Objects.equals(uri, urlset.uri);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(uri);
     }
 }
