@@ -20,7 +20,7 @@ package de.qucosa;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import de.qucosa.repository.model.Url;
-import de.qucosa.repository.model.Urlset;
+import de.qucosa.repository.model.UrlSet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -54,9 +54,9 @@ public class SitemapRestIT {
     private static final String URLSET_UBL_JSON = "/urlsets/testubl";
     private static final String URLSET_UBC_JSON = "/urlsets/testubc";
 
-    private final Urlset urlset = new Urlset("testslub");
-    private final Urlset urlset2 = new Urlset("testubl");
-    private final Urlset urlset3 = new Urlset("testubc");
+    private final UrlSet urlset = new UrlSet("testslub");
+    private final UrlSet urlSet2 = new UrlSet("testubl");
+    private final UrlSet urlSet3 = new UrlSet("testubc");
 
     private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
     private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
@@ -73,7 +73,7 @@ public class SitemapRestIT {
 
     private void create_urlsets() {
         given().contentType(ContentType.JSON).body(urlset).post(URLSETS_ENDPOINT);
-        given().contentType(ContentType.JSON).body(urlset2).post(URLSETS_ENDPOINT);
+        given().contentType(ContentType.JSON).body(urlSet2).post(URLSETS_ENDPOINT);
     }
 
     private void create_urls() {
@@ -115,14 +115,14 @@ public class SitemapRestIT {
 
     @Test
     public void posting_urlset_responds_with_CREATED() {
-        given().contentType(ContentType.JSON).body(urlset3)
+        given().contentType(ContentType.JSON).body(urlSet3)
                 .when().post(URLSETS_ENDPOINT).then()
                 .statusCode(equalTo(HttpStatus.CREATED.value()));
     }
 
     @Test
     public void is_urlset_created() {
-        given().contentType(ContentType.JSON).body(urlset3)
+        given().contentType(ContentType.JSON).body(urlSet3)
                 .when().post(URLSETS_ENDPOINT).then()
                 .statusCode(equalTo(HttpStatus.CREATED.value()));
 

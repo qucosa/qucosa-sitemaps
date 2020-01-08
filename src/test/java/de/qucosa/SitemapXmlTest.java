@@ -20,7 +20,7 @@ package de.qucosa;
 import de.qucosa.model.SitemapIndexModel;
 import de.qucosa.model.SitemapModel;
 import de.qucosa.repository.model.Url;
-import de.qucosa.repository.model.Urlset;
+import de.qucosa.repository.model.UrlSet;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -35,8 +35,8 @@ public class SitemapXmlTest {
     private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
     private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
 
-    private final Urlset urlset = new Urlset("slub");
-    private final Urlset urlset2 = new Urlset("ubl");
+    private final UrlSet urlset = new UrlSet("slub");
+    private final UrlSet urlSet2 = new UrlSet("ubl");
 
     @Test
     public void testTenantSitemap() throws JAXBException, IOException {
@@ -57,8 +57,8 @@ public class SitemapXmlTest {
 
         urlset.setUrlList(Arrays.asList(url, url2));
         urlset.setLastmod("2018-10-10");
-        urlset2.setUrlList(Arrays.asList(url3));
-        sitemap.setUrlset(Arrays.asList(urlset, urlset2));
+        urlSet2.setUrlList(Arrays.asList(url3));
+        sitemap.setUrlset(Arrays.asList(urlset, urlSet2));
 
         JAXBContext context = JAXBContext.newInstance(SitemapIndexModel.class);
         Marshaller marshaller = context.createMarshaller();
