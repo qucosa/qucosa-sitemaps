@@ -17,16 +17,27 @@
 
 package de.qucosa.rest;
 
+import de.qucosa.repository.services.UrlService;
+import de.qucosa.repository.services.UrlSetService;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SitemapRestController {
 
-    private int restserverport;
-    private String restserverhost;
+    private UrlService urlService;
+
+    private UrlSetService urlSetService;
+
+    public SitemapRestController(UrlService urlService, UrlSetService urlSetService) {
+        this.urlService = urlService;
+        this.urlSetService = urlSetService;
+    }
+
+//    private int restserverport;
+//    private String restserverhost;
     // to get server port
-    private Environment environment;
+//    private Environment environment;
 
 //    @Autowired
 //    public SitemapRestController(UrlSetRepository urlSetRepository, UrlRepository urlRepository, Environment environment
