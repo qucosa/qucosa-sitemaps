@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 public class Url implements Serializable {
-    private Urlset urlset;
+    private UrlSet urlset;
 
     private String loc;
 
@@ -81,7 +81,7 @@ public class Url implements Serializable {
     }
 
     @XmlTransient
-    public Urlset getUrlset() { return urlset; }
+    public UrlSet getUrlset() { return urlset; }
 
-    public void setUrlset(Urlset urlset) { this.urlset = urlset; }
+    public void setUrlset(UrlSet urlset) { this.urlset = urlset; }
 }
