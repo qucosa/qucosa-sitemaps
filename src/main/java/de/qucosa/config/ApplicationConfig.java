@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @Configuration
-public class ApllicationConfig {
+public class ApplicationConfig {
     @Autowired
     private Environment environment;
 
