@@ -1,6 +1,7 @@
 package de.qucosa.repository.services;
 
 import de.qucosa.repository.Dao;
+import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.UrlSet;
 import org.springframework.stereotype.Component;
 
@@ -13,5 +14,9 @@ public class UrlSetService {
 
     public void setDao(Dao<UrlSet> dao) {
         this.dao = dao;
+    }
+
+    public UrlSet saveUrlSet(UrlSet urlSet) throws SaveFailed {
+        return dao.saveAndSetIdentifier(urlSet);
     }
 }
