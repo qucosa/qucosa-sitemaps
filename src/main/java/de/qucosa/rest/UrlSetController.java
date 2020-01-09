@@ -6,7 +6,6 @@ import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.UrlSet;
 import de.qucosa.repository.services.UrlSetService;
 import de.qucosa.utils.Utils;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 public class UrlSetController {
     private UrlSetService urlSetService;
 
-    private Environment environment;
-
-    public UrlSetController(UrlSetService urlSetService, Environment environment) {
+    public UrlSetController(UrlSetService urlSetService) {
         this.urlSetService = urlSetService;
-        this.environment = environment;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE})
