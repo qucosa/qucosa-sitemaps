@@ -1,6 +1,7 @@
 package de.qucosa.rest;
 
 import de.qucosa.ErrorDetails;
+import de.qucosa.repository.exceptions.DeleteFailed;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.UrlSet;
 import de.qucosa.repository.services.UrlSetService;
@@ -9,6 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +54,19 @@ public class UrlSetController {
         }
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity deleteUrlSet(@PathVariable("urlset") String urlset) {
+
+        try {
+            urlSetService.deleteUrlSet(urlset);
+        } catch (DeleteFailed deleteFailed) {
+            return new ErrorDetails(this.getClass().getName(), "deleteUrlSet", "DELETE:urlsets/urlset",
+                    HttpStatus.NOT_ACCEPTABLE, deleteFailed.getMessage(), deleteFailed).response();
+        }
+
+        return new ResponseEntity<>("Urlset / Tenant '" + urlset + "' is deleted.", HttpStatus.NO_CONTENT);
     }
 }

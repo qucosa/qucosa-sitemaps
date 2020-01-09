@@ -132,7 +132,19 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
 
     @Override
     public void delete(String ident) throws DeleteFailed {
+        String sql = "DELETE FROM urlset where uri = ?";
 
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, ident);
+            int deletedRows = statement.executeUpdate();
+
+            if (deletedRows == 0) {
+                throw new DeleteFailed("Cannot delete urlset.");
+            }
+        } catch (SQLException e) {
+            throw new DeleteFailed("SQL-ERROR: Cannot delete urlset.", e);
+        }
     }
 
     @Override
