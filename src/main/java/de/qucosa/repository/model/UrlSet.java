@@ -18,23 +18,25 @@
 package de.qucosa.repository.model;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
+@JsonAutoDetect
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlSet implements Serializable {
+    @JsonProperty("uri")
     private String uri;
 
+    @JsonProperty("loc")
     private String loc;
 
+    @JsonProperty("lastmod")
     private String lastmod;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<Url> urlList;
 
     public UrlSet(String uri) {
         this.uri = uri;
@@ -42,39 +44,13 @@ public class UrlSet implements Serializable {
 
     public UrlSet() { super(); }
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
     @XmlTransient
     public String getUri() {
         return uri;
     }
 
-    @XmlTransient
-    public List<Url> getUrlList() {
-        if (urlList == null) {
-            urlList = new ArrayList<>();
-        }
-        return urlList;
-    }
-
-    public void addUrl(Url url) {
-        if (urlList == null) {
-            urlList = new ArrayList<>();
-        }
-        this.urlList.add(url);
-    }
-
-    public void removeUrl(Url url) {
-        this.urlList.remove(url);
-    }
-
-    public void setUrlList(List<Url> urlList) {
-        if (urlList == null) {
-            urlList = new ArrayList<>();
-        }
-        this.urlList = urlList;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     @XmlElement
