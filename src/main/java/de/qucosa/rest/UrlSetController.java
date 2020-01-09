@@ -80,6 +80,6 @@ public class UrlSetController {
                     HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
         }
 
-        return null;
+        return new ResponseEntity<>(urlSet, HttpStatus.FOUND);
     }
 }
