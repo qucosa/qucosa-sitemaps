@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 public class Url implements Serializable {
-    private UrlSet urlset;
+    private String urlSetUri;
 
     private String loc;
 
@@ -35,18 +35,6 @@ public class Url implements Serializable {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String priority;
-
-    public Url(String loc, String lastmod) {
-        this.loc = loc;
-        this.lastmod = lastmod;
-    }
-
-    public Url(String loc, String lastmod, String changefreq, String priority) {
-        this.loc = loc;
-        this.lastmod = lastmod;
-        this.changefreq = changefreq;
-        this.priority = priority;
-    }
 
     public String getLoc() {
         return loc;
@@ -81,7 +69,11 @@ public class Url implements Serializable {
     }
 
     @XmlTransient
-    public UrlSet getUrlset() { return urlset; }
+    public String getUrlSetUri() {
+        return urlSetUri;
+    }
 
-    public void setUrlset(UrlSet urlset) { this.urlset = urlset; }
+    public void setUrlSetUri(String urlSetUri) {
+        this.urlSetUri = urlSetUri;
+    }
 }
