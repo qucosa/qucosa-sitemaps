@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -102,7 +103,27 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
 
     @Override
     public UrlSet findRowByPropertyAndValue(String property, String value) throws NotFound {
-        return null;
+        UrlSet urlset = new UrlSet();
+        String sql = "SELECT * FROM urlset where " + property + " = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                urlset.setUri(resultSet.getString("uri"));
+                urlset.setLastmod(resultSet.getString("lastmod"));
+                urlset.setLoc(resultSet.getString("loc"));
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            throw new NotFound("SQL ERROR: Canot found urlset.", e);
+        }
+
+        return urlset;
     }
 
     @Override
@@ -142,6 +163,8 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
             if (deletedRows == 0) {
                 throw new DeleteFailed("Cannot delete urlset.");
             }
+
+            statement.close();
         } catch (SQLException e) {
             throw new DeleteFailed("SQL-ERROR: Cannot delete urlset.", e);
         }

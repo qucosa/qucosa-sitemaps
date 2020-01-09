@@ -2,6 +2,7 @@ package de.qucosa.rest;
 
 import de.qucosa.ErrorDetails;
 import de.qucosa.repository.exceptions.DeleteFailed;
+import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.UrlSet;
 import de.qucosa.repository.services.UrlSetService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,5 +66,20 @@ public class UrlSetController {
         }
 
         return new ResponseEntity<>("Urlset / Tenant '" + urlset + "' is deleted.", HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity find(@PathVariable("urlset") String urlset) {
+        UrlSet urlSet = new UrlSet();
+
+        try {
+            urlSet = urlSetService.findByUri("uri", urlset);
+        } catch (NotFound notFound) {
+            return new ErrorDetails(this.getClass().getName(), "find", "GET:urlsets/urlset",
+                    HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+        }
+
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package de.qucosa.repository.services;
 
 import de.qucosa.repository.Dao;
 import de.qucosa.repository.exceptions.DeleteFailed;
+import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.UrlSet;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,9 @@ public class UrlSetService {
 
     public void deleteUrlSet(String urlset) throws DeleteFailed {
         dao.delete(urlset);
+    }
+
+    public UrlSet findByUri(String column, String value) throws NotFound {
+        return dao.findRowByPropertyAndValue(column, value);
     }
 }
