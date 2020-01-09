@@ -21,6 +21,7 @@ import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.exceptions.UpdateFailed;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 public interface Dao<T> {
