@@ -26,6 +26,8 @@ import de.qucosa.repository.model.UrlSet;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Repository
@@ -44,7 +46,28 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
 
     @Override
     public UrlSet saveAndSetIdentifier(UrlSet object) throws SaveFailed {
-        return null;
+        String sql = "INSERT INTO urlset (uri, lastmod, loc) " +
+                "VALUES (?, ?, ?) " +
+                "ON CONFLICT (uri) " +
+                "DO NOTHING";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, object.getUri());
+            ps.setString(2, object.getLastmod());
+            ps.setString(3, object.getLoc());
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SaveFailed("Cannot save urlset.");
+            }
+
+            ps.close();
+        } catch (SQLException e) {
+            throw new SaveFailed("SQL-ERROR: Cannot save urlset.", e);
+        }
+
+        return object;
     }
 
     @Override
