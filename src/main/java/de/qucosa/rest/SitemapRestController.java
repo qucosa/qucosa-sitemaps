@@ -17,10 +17,22 @@
 
 package de.qucosa.rest;
 
+import de.qucosa.repository.model.Url;
 import de.qucosa.repository.services.UrlService;
 import de.qucosa.repository.services.UrlSetService;
-import org.springframework.core.env.Environment;
+import de.qucosa.utils.Utils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
+
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class SitemapRestController {
@@ -33,76 +45,6 @@ public class SitemapRestController {
         this.urlService = urlService;
         this.urlSetService = urlSetService;
     }
-
-//    private int restserverport;
-//    private String restserverhost;
-    // to get server port
-//    private Environment environment;
-
-//    @Autowired
-//    public SitemapRestController(UrlSetRepository urlSetRepository, UrlRepository urlRepository, Environment environment
-//        , @Value("${rest.server.host}") final String restserverhost, @Value("${server.port}") final int restserverport) {
-//        this.urlSetRepository = urlSetRepository;
-//        this.urlRepository = urlRepository;
-//        this.environment = environment;
-//        this.restserverhost = restserverhost;
-//        this.restserverport = restserverport;
-//    }
-//
-//    private String getHostUrl() {
-//        String hosturl;
-//        if (!Utils.empty(restserverhost)) {
-//            hosturl = restserverhost + ":" + restserverport + "/";
-//        } else {
-//            String ip = InetAddress.getLoopbackAddress().getHostAddress();
-//            hosturl = ip+":"+environment.getProperty("local.server.port")+"/";
-//        }
-//        return hosturl;
-//    }
-
-    /**
-     * url-operation to
-     * create url in given urlSetName
-     */
-//    @RequestMapping(method = POST, value = "/urlsets/{urlSetName}", consumes = MediaType.APPLICATION_JSON_VALUE
-//            , produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @ResponseBody
-//    public ResponseEntity createUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-//        if (Utils.empty(url.getLoc())) {
-//            return new ResponseEntity<>("{\"message\": \"Requestbody has to contain Element 'loc'\"}"
-//                    , HttpStatus.BAD_REQUEST);
-//        }
-//        // set lastmod to current time if not given
-//        if (Utils.empty(url.getLastmod())) {
-//            url.setLastmod(Utils.getCurrentW3cDatetime());
-//        }
-//
-//        // create Urlset if it doesn't exist
-//        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
-//
-//        if (!containgUrlSet.isPresent()) {
-//            // set uri / tenant-name
-//            Urlset urlsetToCreate = new Urlset(urlSetName);
-//            // set location
-//            urlsetToCreate.setLoc(getHostUrl() + "urlsets/" + urlSetName);
-//            // set lastmod
-//            if (url.getLastmod().isEmpty()) {
-//                url.setLastmod(Utils.getCurrentW3cDatetime());
-//            }
-//
-//            urlSetRepository.save(urlsetToCreate);
-//        }
-//
-//        Urlset actualUrlset = urlSetRepository.findById(urlSetName).get();
-//        url.setUrlset(actualUrlset);
-//
-//        urlRepository.save(url);
-//        actualUrlset.getUrlList().add(url);
-//        actualUrlset.setLastmod(Utils.getCurrentW3cDatetime());
-//        urlSetRepository.save(actualUrlset);
-//
-//        return new ResponseEntity<>(url, HttpStatus.CREATED);
-//    }
 
     /**
      * url-operation to
@@ -259,27 +201,6 @@ public class SitemapRestController {
     }
     */
 
-    /**
-     * urlset-operation to
-     * create urlSets
-     */
-//    @RequestMapping(method = POST, value = "/urlsets", consumes = MediaType.APPLICATION_JSON_VALUE
-//            , produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @ResponseBody
-//    public ResponseEntity createUrlSet(@RequestBody Urlset urlset) {
-//        Optional<Urlset> urlsetToCreate = urlSetRepository.findById(urlset.getUri());
-//        if (urlsetToCreate.isPresent()) {
-//            return new ResponseEntity<>("{\"message\": \"Urlset " + urlset.getUri()
-//                    + " is already created.\"}", HttpStatus.ALREADY_REPORTED);
-//        }
-//
-//        /* TODO hostauflösung überprüfen */
-//        urlset.setLoc(getHostUrl() + "urlsets/" + urlset.getUri());
-//        urlset.setLastmod(Utils.getCurrentW3cDatetime());
-//        urlSetRepository.save(urlset);
-//
-//        return new ResponseEntity<>(urlset, HttpStatus.CREATED);
-//    }
 
     /**
      * urlSet-operation to
@@ -320,22 +241,6 @@ public class SitemapRestController {
 //        return new ResponseEntity<>(urlset.get(), HttpStatus.OK);
 //    }
 
-    /**
-     * urlSet-operation to
-     * delete specific urlset, identified by setname
-     */
-//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}")
-//    @ResponseBody
-//    public ResponseEntity deleteUrlSet(@PathVariable("urlSetName") String urlSetName) {
-//        Optional<Urlset> urlset = urlSetRepository.findById(urlSetName);
-//        if (!urlset.isPresent()) {
-//            return new ResponseEntity<>("Urlset / Tenant '" + urlSetName + "' doesn't exist."
-//                    , HttpStatus.NOT_FOUND);
-//        }
-//
-//        urlSetRepository.delete(urlset.get());
-//        return new ResponseEntity<>("Urlset / Tenant '" + urlSetName + "' deleted.", HttpStatus.NO_CONTENT);
-//    }
 
     /**
      * sitemap-operation to
