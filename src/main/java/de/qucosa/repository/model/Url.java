@@ -18,22 +18,29 @@
 package de.qucosa.repository.model;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
+@JsonAutoDetect
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Url implements Serializable {
+    @JsonProperty("urlset_uri")
     private String urlSetUri;
 
+    @JsonProperty("loc")
     private String loc;
 
+    @JsonProperty("lastmod")
     private String lastmod;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("changefreq")
     private String changefreq;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("priority")
     private String priority;
 
     public String getLoc() {
