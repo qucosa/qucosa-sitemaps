@@ -26,6 +26,8 @@ import de.qucosa.repository.model.Url;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Repository
@@ -44,7 +46,38 @@ public class UrlDao<T extends Url> implements Dao<Url> {
 
     @Override
     public Url saveAndSetIdentifier(Url object) throws SaveFailed {
-        return null;
+        String sql = "INSERT INTO url (loc, changefreq, lastmod, priority, urlset_uri) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "ON CONFLICT (loc) " +
+                "DO UPDATE SET " +
+                "changefreq=?, lastmod=?, priority=?, urlset_uri=? " +
+                "WHERE url.loc=?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, object.getLoc());
+            statement.setString(2, object.getChangefreq());
+            statement.setString(3, object.getLastmod());
+            statement.setString(4, object.getPriority());
+            statement.setString(5, object.getUrlSetUri());
+            statement.setString(6, object.getChangefreq());
+            statement.setString(7, object.getLastmod());
+            statement.setString(8, object.getPriority());
+            statement.setString(9, object.getUrlSetUri());
+            statement.setString(10, object.getLoc());
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SaveFailed("Cannot save url.");
+            }
+
+
+
+            statement.close();
+        } catch (SQLException e) {
+            throw new SaveFailed("SQL-ERROR: Cannot save url.", e);
+        }
+
+        return object;
     }
 
     @Override
