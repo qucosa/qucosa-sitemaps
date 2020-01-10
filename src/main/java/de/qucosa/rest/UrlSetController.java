@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/urlsets")
-public class UrlSetController {
+public class UrlSetController extends ControllerAbstract {
     private UrlSetService urlSetService;
 
     public UrlSetController(UrlSetService urlSetService) {
@@ -34,14 +34,13 @@ public class UrlSetController {
     @ResponseBody
     public ResponseEntity createUrlSet(@RequestBody UrlSet urlset, HttpServletRequest request) {
         UrlSet output = null;
-        String hosturl = request.getRequestURL().toString();
 
         if (urlset.getUri().isEmpty()) {
             return new ErrorDetails(this.getClass().getName(), "createUrlSet", "POST:urlsets",
                     HttpStatus.BAD_REQUEST, "UrlSet uri ist empty.", null).response();
         }
 
-        urlset.setLoc(hosturl + "/" + urlset.getUri());
+        urlset.setLoc(serverUrl(request)+ "/urlsets/" + urlset.getUri());
         urlset.setLastmod(Utils.getCurrentW3cDatetime());
 
         try {
