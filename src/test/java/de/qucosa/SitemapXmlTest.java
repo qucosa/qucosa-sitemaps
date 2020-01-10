@@ -31,38 +31,38 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class SitemapXmlTest {
-    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
-    private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
-    private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
-
-    private final UrlSet urlset = new UrlSet("slub");
-    private final UrlSet urlSet2 = new UrlSet("ubl");
-
-    @Test
-    public void testTenantSitemap() throws JAXBException, IOException {
-        SitemapModel sitemap = new SitemapModel();
-        sitemap.getUrl().add(url);
-        sitemap.getUrl().add(url2);
-        sitemap.getUrl().add(url3);
-
-        JAXBContext context = JAXBContext.newInstance(SitemapModel.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(sitemap, new FileWriter("testTenant.xml"));
-    }
-
-    @Test
-    public void testGlobalSitemap() throws JAXBException, IOException {
-        SitemapIndexModel sitemap = new SitemapIndexModel();
-
-        urlset.setUrlList(Arrays.asList(url, url2));
-        urlset.setLastmod("2018-10-10");
-        urlSet2.setUrlList(Arrays.asList(url3));
-        sitemap.setUrlset(Arrays.asList(urlset, urlSet2));
-
-        JAXBContext context = JAXBContext.newInstance(SitemapIndexModel.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(sitemap, new FileWriter("testGlobal.xml"));
-    }
+//    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
+//    private final Url url2 = new Url("https://example.com/landingpage2", "2018-10-10");
+//    private final Url url3 = new Url("https://example.com/landingpage3", "2018-10-10");
+//
+//    private final UrlSet urlset = new UrlSet("slub");
+//    private final UrlSet urlSet2 = new UrlSet("ubl");
+//
+//    @Test
+//    public void testTenantSitemap() throws JAXBException, IOException {
+//        SitemapModel sitemap = new SitemapModel();
+//        sitemap.getUrl().add(url);
+//        sitemap.getUrl().add(url2);
+//        sitemap.getUrl().add(url3);
+//
+//        JAXBContext context = JAXBContext.newInstance(SitemapModel.class);
+//        Marshaller marshaller = context.createMarshaller();
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//        marshaller.marshal(sitemap, new FileWriter("testTenant.xml"));
+//    }
+//
+//    @Test
+//    public void testGlobalSitemap() throws JAXBException, IOException {
+//        SitemapIndexModel sitemap = new SitemapIndexModel();
+//
+//        urlset.setUrlList(Arrays.asList(url, url2));
+//        urlset.setLastmod("2018-10-10");
+//        urlSet2.setUrlList(Arrays.asList(url3));
+//        sitemap.setUrlset(Arrays.asList(urlset, urlSet2));
+//
+//        JAXBContext context = JAXBContext.newInstance(SitemapIndexModel.class);
+//        Marshaller marshaller = context.createMarshaller();
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//        marshaller.marshal(sitemap, new FileWriter("testGlobal.xml"));
+//    }
 }
