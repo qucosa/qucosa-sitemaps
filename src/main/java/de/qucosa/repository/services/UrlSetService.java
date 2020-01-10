@@ -22,8 +22,8 @@ public class UrlSetService {
         return dao.saveAndSetIdentifier(urlSet);
     }
 
-    public void deleteUrlSet(String urlset) throws DeleteFailed {
-        dao.delete(urlset);
+    public void deleteUrlSet(String column, String urlset) throws DeleteFailed {
+        dao.delete(column, urlset);
     }
 
     public UrlSet findByUri(String column, String value) throws NotFound {

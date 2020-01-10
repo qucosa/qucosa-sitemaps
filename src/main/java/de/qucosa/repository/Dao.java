@@ -51,7 +51,7 @@ public interface Dao<T> {
 
     void delete() throws DeleteFailed;
 
-    void delete(String ident) throws DeleteFailed;
+    void delete(String column, String value) throws DeleteFailed;
 
     void delete(T object) throws DeleteFailed;
 }

@@ -152,12 +152,12 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
     }
 
     @Override
-    public void delete(String ident) throws DeleteFailed {
-        String sql = "DELETE FROM urlset where uri = ?";
+    public void delete(String column, String value) throws DeleteFailed {
+        String sql = "DELETE FROM urlset where " + column + "=?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, ident);
+            statement.setString(1, value);
             int deletedRows = statement.executeUpdate();
 
             if (deletedRows == 0) {

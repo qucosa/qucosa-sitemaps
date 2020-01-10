@@ -58,7 +58,7 @@ public class UrlSetController extends ControllerAbstract {
     public ResponseEntity deleteUrlSet(@PathVariable("urlset") String urlset) {
 
         try {
-            urlSetService.deleteUrlSet(urlset);
+            urlSetService.deleteUrlSet("uri", urlset);
         } catch (DeleteFailed deleteFailed) {
             return new ErrorDetails(this.getClass().getName(), "deleteUrlSet", "DELETE:urlsets/urlset",
                     HttpStatus.NOT_ACCEPTABLE, deleteFailed.getMessage(), deleteFailed).response();
