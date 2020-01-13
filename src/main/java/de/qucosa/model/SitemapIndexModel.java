@@ -22,19 +22,19 @@ import de.qucosa.repository.model.UrlSet;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 
 @XmlRootElement(name="sitemapindex")
 public class SitemapIndexModel {
-    private List<UrlSet> urlset = new ArrayList<>();
+    private Collection<UrlSet> urlset = new ArrayList<>();
 
     @XmlElement(name="sitemap")
-    public List<UrlSet> getUrlset() {
+    public Collection<UrlSet> getUrlset() {
         return urlset;
     }
 
-    public void setUrlset(List<UrlSet> urlset) {
+    public void setUrlset(Collection<UrlSet> urlset) {
         this.urlset = urlset;
     }
 
