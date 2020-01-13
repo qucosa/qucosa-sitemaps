@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -112,7 +113,29 @@ public class UrlDao<T extends Url> implements Dao<Url> {
 
     @Override
     public Url findRowByPropertyAndValue(String property, String value) throws NotFound {
-        return null;
+        Url url = new Url();
+        String sql = "SELECT * FROM url WHERE " + property + "=?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                url.setLoc(resultSet.getString("loc"));
+                url.setChangefreq(resultSet.getString("changefreq"));
+                url.setLastmod(resultSet.getString("lastmod"));
+                url.setPriority(resultSet.getString("priority"));
+                url.setUrlSetUri(resultSet.getString("urlset_uri"));
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
     }
 
     @Override
@@ -141,8 +164,22 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public void delete(String ident) throws DeleteFailed {
+    public void delete(String column, String value) throws DeleteFailed {
+        String sql = "DELETE FROM url WHERE " + column + "=?";
 
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            int deletedRows = statement.executeUpdate();
+
+            if (deletedRows == 0) {
+                throw new DeleteFailed("Cannot delete url.");
+            }
+
+            statement.close();
+        } catch (SQLException e) {
+            throw new DeleteFailed("SQL-ERROR: Cannot delete url.", e);
+        }
     }
 
     @Override
