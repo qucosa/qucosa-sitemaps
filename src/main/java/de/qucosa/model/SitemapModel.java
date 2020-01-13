@@ -30,7 +30,7 @@ public class SitemapModel {
     private List<Url> url = new ArrayList<>();
 
     public List<Url> getUrl() {
-        return this.url;
+        return url;
     }
 
     public void setUrl(List<Url> url) {
