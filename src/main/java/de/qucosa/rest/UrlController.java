@@ -1,6 +1,8 @@
 package de.qucosa.rest;
 
 import de.qucosa.ErrorDetails;
+import de.qucosa.repository.exceptions.DeleteFailed;
+import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.Url;
 import de.qucosa.repository.model.UrlSet;
@@ -11,15 +13,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/url")
@@ -69,11 +77,74 @@ public class UrlController extends ControllerAbstract {
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
-    private UrlSet urlSet(String urlset, HttpServletRequest request) {
-        UrlSet urlSet = restTemplate.exchange(serverUrl(request) + "/urlsets/" + urlset,
+    /* TODO test bulk-delete */
+    /* TODO spring security authorization einbauen */
+    @DeleteMapping(value = "{urlset}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity delete(@PathVariable("urlset") String urlset, @RequestBody String input, HttpServletRequest request) {
+        List<String> urlList = Arrays.asList(input.split(","));
+        UrlSet urlSet = findUrlSet(urlset, request);
+        List<String> removeList = new ArrayList<>();
+        int cntRemoves = 0;
+
+        if (urlSet.getUri() == null) {
+            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
+                    HttpStatus.NOT_FOUND, "Urlset " + urlset + " for url delete not found.", null).response();
+        }
+
+        if (urlList.size() == 0) {
+            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
+                    HttpStatus.NOT_FOUND, "Cannot find url's in data list.", null).response();
+        }
+
+        for (String url : urlList) {
+
+            try {
+                // @todo log not found urls for problem check
+                urlService.findUrl("loc", url);
+                removeList.add(url);
+            } catch (NotFound ignored) { }
+        }
+
+        for (String url : removeList) {
+
+            try {
+                urlService.deleteUrl("loc", url);
+            } catch (DeleteFailed ignored) {
+                // @todo log not delete url for problem check
+            }
+
+            cntRemoves++;
+        }
+
+        return new ResponseEntity<>(cntRemoves + " url's from " + urlList.size() + " removed.", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{urlset}")
+    @ResponseBody
+    public ResponseEntity findUrl(@PathVariable("urlset") String urlset, @RequestParam("url") String url) {
+        Url urlData = new Url();
+        url = url.replace("qucosa:", "qucosa%3A");
+
+        try {
+            urlData = urlService.findUrl("loc", url);
+        } catch (NotFound notFound) {
+            return new ErrorDetails(this.getClass().getName(), "findUrl", "GET:url/urlset?url=",
+                    HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+        }
+
+        return new ResponseEntity<>(urlData, HttpStatus.OK);
+    }
+
+    private UrlSet findUrlSet(String urlset, HttpServletRequest request) {
+        return restTemplate.exchange(serverUrl(request) + "/urlsets/" + urlset,
                 HttpMethod.GET,
                 null,
                 UrlSet.class).getBody();
+    }
+
+    private UrlSet urlSet(String urlset, HttpServletRequest request) {
+        UrlSet urlSet = findUrlSet(urlset, request);
 
         if (urlSet.getUri() == null) {
             UrlSet newUrlSet = new UrlSet();
