@@ -27,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -120,20 +121,34 @@ public class UrlController extends ControllerAbstract {
         return new ResponseEntity<>(cntRemoves + " url's from " + urlList.size() + " removed.", HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{urlset}")
+    @GetMapping(value = "/{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity findUrl(@PathVariable("urlset") String urlset, @RequestParam("url") String url) {
-        Url urlData = new Url();
-        url = url.replace("qucosa:", "qucosa%3A");
+    public ResponseEntity findUrls(@PathVariable("urlset") String urlset, @RequestParam(value = "url", required = false) String url) {
+
+        if (url != null && !url.isEmpty()) {
+            Url urlData = new Url();
+            url = url.replace("qucosa:", "qucosa%3A");
+
+            try {
+                urlData = urlService.findUrl("loc", url);
+            } catch (NotFound notFound) {
+                return new ErrorDetails(this.getClass().getName(), "findUrls", "GET:url/urlset?url=",
+                        HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+            }
+
+            return new ResponseEntity<>(urlData, HttpStatus.OK);
+        }
+
+        Collection<Url> urlList = new ArrayList<>();
 
         try {
-            urlData = urlService.findUrl("loc", url);
+            urlList = urlService.findUrllist("urlset_uri", urlset);
         } catch (NotFound notFound) {
-            return new ErrorDetails(this.getClass().getName(), "findUrl", "GET:url/urlset?url=",
+            return new ErrorDetails(this.getClass().getName(), "findUrls", "GET:url/urlset",
                     HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
         }
 
-        return new ResponseEntity<>(urlData, HttpStatus.OK);
+        return new ResponseEntity<>(urlList, HttpStatus.OK);
     }
 
     private UrlSet findUrlSet(String urlset, HttpServletRequest request) {
