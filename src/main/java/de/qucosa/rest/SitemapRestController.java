@@ -17,190 +17,47 @@
 
 package de.qucosa.rest;
 
+import de.qucosa.model.SitemapModel;
 import de.qucosa.repository.model.Url;
-import de.qucosa.repository.services.UrlService;
-import de.qucosa.repository.services.UrlSetService;
-import de.qucosa.utils.Utils;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
-
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 @RestController
-public class SitemapRestController {
+@RequestMapping("/sitemap")
+public class SitemapRestController extends ControllerAbstract {
 
-    private UrlService urlService;
+    private RestTemplate restTemplate;
 
-    private UrlSetService urlSetService;
-
-    public SitemapRestController(UrlService urlService, UrlSetService urlSetService) {
-        this.urlService = urlService;
-        this.urlSetService = urlSetService;
+    public SitemapRestController( RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    /**
-     * url-operation to
-     * modify/update url in given urlSetName
-     */
-//    @RequestMapping(method = PUT, value = "/urlsets/{urlSetName}", consumes = MediaType.APPLICATION_JSON_VALUE
-//            , produces = {MediaType.APPLICATION_JSON_VALUE})
-//    @ResponseBody
-//    public ResponseEntity modifyUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-//        if (Utils.empty(url.getLoc())) {
-//            return new ResponseEntity<>("{\"message\": \"Requestbody has to contain Element 'loc'\"}"
-//                    , HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // create Urlset if it doesn't exist
-//        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
-//
-//        if (!containgUrlSet.isPresent()) {
-//            // set uri / tenant-name
-//            Urlset urlsetToCreate = new Urlset(urlSetName);
-//            // set location
-//            urlsetToCreate.setLoc(getHostUrl() + "urlsets/" + urlSetName);
-//            // set lastmod
-//            urlsetToCreate.setLastmod(Utils.getCurrentW3cDatetime());
-//
-//            urlSetRepository.save(urlsetToCreate);
-//        }
-//
-//        Urlset actualUrlset = urlSetRepository.findById(urlSetName).get();
-//
-//        Optional<Url> urlToBeModified = urlRepository.findById(url.getLoc());
-//        if (!urlToBeModified.isPresent()) {
-//            url.setUrlset(actualUrlset);
-//            // set lastmod to current time if not given
-//            if (Utils.empty(url.getLastmod())) {
-//                url.setLastmod(Utils.getCurrentW3cDatetime());
-//            }
-//
-//            urlRepository.save(url);
-//            actualUrlset.addUrl(url);
-//            actualUrlset.getUrlList().add(url);
-//            actualUrlset.setLastmod(Utils.getCurrentW3cDatetime());
-//            urlSetRepository.save(actualUrlset);
-//
-//            return new ResponseEntity<>("{\"message\": \"Url could not be modified, because it did not exist." +
-//                    " Therefore created Url: " + url.getLoc() + "\"}", HttpStatus.CREATED);
-//        } else {
-//            Url actualUrl = urlToBeModified.get();
-//
-//            actualUrl.setUrlset(actualUrlset);
-//            // set lastmod to current time if not given
-//            if (!Utils.empty(url.getLastmod())) {
-//                actualUrl.setLastmod(url.getLastmod());
-//            } else {
-//                actualUrl.setLastmod(Utils.getCurrentW3cDatetime());
-//            }
-//            if (!Utils.empty(url.getChangefreq())) {
-//                actualUrl.setChangefreq(url.getChangefreq());
-//            }
-//            if (!Utils.empty(url.getPriority())) {
-//                actualUrl.setPriority(url.getPriority());
-//            }
-//
-//            urlRepository.save(actualUrl);
-//            actualUrlset.getUrlList().add(actualUrl);
-//            urlSetRepository.save(actualUrlset);
-//
-//            return new ResponseEntity<>(actualUrl, HttpStatus.OK);
-//        }
-//    }
-
-    /**
-     * url-operation to
-     * delete url in given urlSetName
-     */
-    /* TODO test bulk-delete */
-    /* TODO spring security authorization einbauen */
-//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.TEXT_PLAIN_VALUE)
-//    @ResponseBody
-//    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody List<String> urlList) {
-//        Optional<Urlset> setInRepo = urlSetRepository.findById(urlSetName);
-//        if (!setInRepo.isPresent()) {
-//            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
-//        }
-//        boolean anyUrlDeleted = false;
-//        for (String url : urlList) {
-//            Optional<Url> urlInRepo  = urlRepository.findById(url);
-//            if (urlInRepo.isPresent()) {
-//                setInRepo.get().setLastmod(Utils.getCurrentW3cDatetime());
-//                // TODO test if needed
-////                setInRepo.get().getUrlList().remove(urlInRepo.get());
-//
-//                urlRepository.delete(urlInRepo.get());
-//                anyUrlDeleted = true;
-//            }
-//        }
-//        if (anyUrlDeleted) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } else {
-//            return new ResponseEntity<>("None of the Url's could be found in the sitemap-repository"
-//                    , HttpStatus.NOT_FOUND);
-//        }
-//
-//    }
-
-    /**
-     * url-operation to
-     * delete url in given urlSetName
-     */
-//    @RequestMapping(method = DELETE, value = "/urlsets/{urlSetName}/deleteurl", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    @ResponseBody
-//    public ResponseEntity deleteUrl(@PathVariable("urlSetName") String urlSetName, @RequestBody Url url) {
-//        if (Utils.empty(url.getLoc())) {
-//            return new ResponseEntity<>("Requestbody has to contain Element 'loc'", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        Optional<Urlset> containgUrlSet = urlSetRepository.findById(urlSetName);
-//        if (!containgUrlSet.isPresent()) {
-//            return new ResponseEntity<>("Urlset (tenant) " + urlSetName + " doesn't exist", HttpStatus.NOT_FOUND);
-//        }
-//
-//        Optional<Url> urlToBeModified = urlRepository.findById(url.getLoc());
-//        if (!urlToBeModified.isPresent()) {
-//            return new ResponseEntity<>("Url " + url.getLoc() + " doesn't exist", HttpStatus.NOT_FOUND);
-//        }
-//
-//        Urlset setInRepo = containgUrlSet.get();
-//        Url urlInRepo = urlToBeModified.get();
-//
-//        // Url-location is part of the Urlset (tenant) in url (urlSetName}
-//        if (setInRepo.getUrlList().contains(urlInRepo)) {
-//            urlRepository.delete(urlInRepo);
-//            setInRepo.setLastmod(Utils.getCurrentW3cDatetime());
-//            setInRepo.getUrlList().remove(urlInRepo);
-//            urlSetRepository.save(setInRepo);
-//
-//            return new ResponseEntity<>("{\"message\": \"URL deleted.\"",HttpStatus.NO_CONTENT);
-//        } else {
-//            return new ResponseEntity<>("{\"message\": \"Url '" + urlInRepo.getLoc() + "' doesn't exist in urlset (tenant) "
-//                    + urlSetName + "\"}", HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
-    /**
-     * url-operation to
-     * get url in given urlSetName
-     * TODO url as parameter doesn't work
-     */
-    /*
-    @RequestMapping(method = GET, value = "/urlsets/{urlSetName}/{url}")
+    @RequestMapping(method = RequestMethod.GET, value = "/{urlset}", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
-    public ResponseEntity getUrl(@PathVariable("urlSetName") String urlSetName, @PathVariable("url") String url) {
-        return new ResponseEntity<>(urlRepository.findById(url).get(), HttpStatus.OK);
-    }
-    */
+    public ResponseEntity getSitemapForTenant(@PathVariable("urlset") String urlset, HttpServletRequest request) {
+        Collection<Url> urls = restTemplate.exchange(
+                serverUrl(request) + "/url/" + urlset,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
 
+        SitemapModel tenantSitemap = new SitemapModel();
+        tenantSitemap.setUrl(urls);
+
+        return new ResponseEntity<>(tenantSitemap, HttpStatus.OK);
+    }
 
     /**
      * urlSet-operation to
