@@ -1,6 +1,8 @@
 package de.qucosa.repository.services;
 
 import de.qucosa.repository.Dao;
+import de.qucosa.repository.exceptions.DeleteFailed;
+import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.Url;
 import org.springframework.stereotype.Component;
@@ -19,5 +21,13 @@ public class UrlService {
 
     public Url save(Url url) throws SaveFailed {
         return dao.saveAndSetIdentifier(url);
+    }
+
+    public void deleteUrl(String column, String url) throws DeleteFailed {
+        dao.delete(column, url);
+    }
+
+    public Url findUrl(String column, String value) throws NotFound {
+        return dao.findRowByPropertyAndValue(column, value);
     }
 }
