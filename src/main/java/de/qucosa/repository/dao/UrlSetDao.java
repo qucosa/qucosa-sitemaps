@@ -29,7 +29,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
@@ -88,7 +91,28 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
 
     @Override
     public Collection<UrlSet> findAll() throws NotFound {
-        return null;
+        String sql = "SELECT * FROM urlset";
+        Collection<UrlSet> urlSets = new ArrayList<>();
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                UrlSet urlset = new UrlSet();
+                urlset.setUri(resultSet.getString("uri"));
+                urlset.setLastmod(resultSet.getString("lastmod"));
+                urlset.setLoc(resultSet.getString("loc"));
+                urlSets.add(urlset);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return urlSets;
     }
 
     @Override

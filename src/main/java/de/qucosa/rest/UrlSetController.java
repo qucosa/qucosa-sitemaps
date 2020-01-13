@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/urlsets")
@@ -80,5 +82,20 @@ public class UrlSetController extends ControllerAbstract {
         }
 
         return new ResponseEntity<>(urlSet, HttpStatus.FOUND);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity findAll() {
+        Collection<UrlSet> urlSets = new ArrayList<>();
+
+        try {
+            urlSets = urlSetService.findAll();
+        } catch (NotFound notFound) {
+            return new ErrorDetails(this.getClass().getName(), "findAll", "GET:urlsets",
+                    HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+        }
+
+        return new ResponseEntity<>(urlSets, HttpStatus.FOUND);
     }
 }
