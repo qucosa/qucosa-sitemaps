@@ -7,6 +7,8 @@ import de.qucosa.repository.exceptions.SaveFailed;
 import de.qucosa.repository.model.Url;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+
 @Component
 public class UrlService {
 
@@ -29,5 +31,9 @@ public class UrlService {
 
     public Url findUrl(String column, String value) throws NotFound {
         return dao.findRowByPropertyAndValue(column, value);
+    }
+
+    public Collection<Url> findUrllist(String property, String value) throws NotFound {
+        return dao.findRowsByPropertyAndValue(property, value);
     }
 }
