@@ -136,7 +136,7 @@ public class UrlController extends ControllerAbstract {
                         HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
             }
 
-            return new ResponseEntity<>(urlData, HttpStatus.OK);
+            return new ResponseEntity<>(urlData, HttpStatus.FOUND);
         }
 
         Collection<Url> urlList = new ArrayList<>();
@@ -148,7 +148,7 @@ public class UrlController extends ControllerAbstract {
                     HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
         }
 
-        return new ResponseEntity<>(urlList, HttpStatus.OK);
+        return new ResponseEntity<>(urlList, HttpStatus.FOUND);
     }
 
     private UrlSet findUrlSet(String urlset, HttpServletRequest request) {
