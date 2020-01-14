@@ -28,7 +28,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class SitemapXmlTest {
 //    private final Url url = new Url("https://example.com/landingpage1", "2018-10-10");
@@ -54,6 +56,7 @@ public class SitemapXmlTest {
 //    @Test
 //    public void testGlobalSitemap() throws JAXBException, IOException {
 //        SitemapIndexModel sitemap = new SitemapIndexModel();
+//        Collection<Url> urls = new ArrayList<>();
 //
 //        urlset.setUrlList(Arrays.asList(url, url2));
 //        urlset.setLastmod("2018-10-10");
