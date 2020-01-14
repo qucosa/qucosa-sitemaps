@@ -7,10 +7,8 @@ import de.qucosa.repository.model.Url;
 import de.qucosa.repository.model.UrlSet;
 import de.qucosa.repository.services.UrlService;
 import de.qucosa.repository.services.UrlSetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.client.RestTemplate;
@@ -21,16 +19,13 @@ import java.sql.SQLException;
 
 @Configuration
 public class ApplicationConfig {
-    @Autowired
     private Environment environment;
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+    public ApplicationConfig(Environment environment) {
+        this.environment = environment;
     }
 
     @Bean
-    @Primary
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(environment.getProperty("app.db.url"));
@@ -43,6 +38,11 @@ public class ApplicationConfig {
     @Bean
     public Connection connection() throws SQLException {
         return dataSource().getConnection();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Bean
