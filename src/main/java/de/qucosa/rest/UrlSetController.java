@@ -66,7 +66,7 @@ public class UrlSetController extends ControllerAbstract {
                     HttpStatus.NOT_ACCEPTABLE, deleteFailed.getMessage(), deleteFailed).response();
         }
 
-        return new ResponseEntity<>("Urlset / Tenant '" + urlset + "' is deleted.", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Urlset / Tenant " + urlset + " is deleted.", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
