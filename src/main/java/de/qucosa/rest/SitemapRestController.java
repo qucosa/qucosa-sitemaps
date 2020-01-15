@@ -50,7 +50,7 @@ public class SitemapRestController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity getSitemapForTenant(@PathVariable("urlset") String urlset, HttpServletRequest request) {
         Collection<Url> urls = restTemplate.exchange(
-                serverUrl(request) + "/url/" + urlset,
+                serverUrl(request, serverPort) + "/url/" + urlset,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
@@ -65,7 +65,7 @@ public class SitemapRestController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity getSitemapforTenantAsJson(@PathVariable("urlset") String urlset,  HttpServletRequest request) {
         Collection<Url> urls = restTemplate.exchange(
-                serverUrl(request) + "/url/" + urlset,
+                serverUrl(request, serverPort) + "/url/" + urlset,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
@@ -77,7 +77,7 @@ public class SitemapRestController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity getSitemapIndex(HttpServletRequest request) {
         Collection<UrlSet> urlSets = restTemplate.exchange(
-                serverUrl(request) + "/urlsets",
+                serverUrl(request, serverPort) + "/urlsets",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<UrlSet>>(){}).getBody();
@@ -92,7 +92,7 @@ public class SitemapRestController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity getSitemapIndexAsJson(HttpServletRequest request) {
         Collection<UrlSet> urlSets = restTemplate.exchange(
-                serverUrl(request) + "/urlsets",
+                serverUrl(request, serverPort) + "/urlsets",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Collection<UrlSet>>(){}).getBody();
