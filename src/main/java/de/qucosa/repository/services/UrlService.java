@@ -36,4 +36,8 @@ public class UrlService {
     public Collection<Url> findUrllist(String property, String value) throws NotFound {
         return dao.findRowsByPropertyAndValue(property, value);
     }
+
+    public Collection<Url> findAll() throws NotFound {
+        return dao.findAll();
+    }
 }

@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -99,7 +100,30 @@ public class UrlDao<T extends Url> implements Dao<Url> {
 
     @Override
     public Collection<Url> findAll() throws NotFound {
-        return null;
+        Collection<Url> list = new ArrayList<>();
+        String sql = "SELECT * FROM url";
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                Url url = new Url();
+                url.setLoc(resultSet.getString("loc"));
+                url.setChangefreq(resultSet.getString("changefreq"));
+                url.setLastmod(resultSet.getString("lastmod"));
+                url.setPriority(resultSet.getString("priority"));
+                url.setUrlSetUri(resultSet.getString("urlset_uri"));
+                list.add(url);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            throw new NotFound("SQL-ERROR: Cannot found url entries.", e);
+        }
+
+        return list;
     }
 
     @Override
