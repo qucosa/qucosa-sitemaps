@@ -42,7 +42,7 @@ public class UrlSetController extends ControllerAbstract {
                     HttpStatus.BAD_REQUEST, "UrlSet uri ist empty.", null).response();
         }
 
-        urlset.setLoc(serverUrl(request)+ "/urlsets/" + urlset.getUri());
+        urlset.setLoc(serverUrl(request, serverPort)+ "/urlsets/" + urlset.getUri());
         urlset.setLastmod(Utils.getCurrentW3cDatetime());
 
         try {
@@ -71,7 +71,8 @@ public class UrlSetController extends ControllerAbstract {
 
     @GetMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity find(@PathVariable("urlset") String urlset) {
+    public ResponseEntity find(@PathVariable("urlset") String urlset, HttpServletRequest request) {
+        serverUrl(request, serverPort);
         UrlSet urlSet = new UrlSet();
 
         try {
