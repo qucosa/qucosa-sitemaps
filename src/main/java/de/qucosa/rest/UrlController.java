@@ -56,10 +56,11 @@ public class UrlController extends ControllerAbstract {
                     HttpStatus.BAD_REQUEST, "Requestbody has to contain Element 'loc'.", null).response();
         }
 
-        if (url.getLastmod().isEmpty()) {
-            url.setLastmod(Utils.getCurrentW3cDatetime());
+        if (url.getLoc().contains("qucosa:")) {
+            url.setLoc(url.getLoc().replace("qucosa:", "qucosa%3A"));
         }
 
+        url.setLastmod(Utils.getCurrentW3cDatetime());
         UrlSet urlSet = urlSet(urlset, request);
 
         if (urlSet.getUri() == null) {
@@ -80,7 +81,7 @@ public class UrlController extends ControllerAbstract {
 
     /* TODO test bulk-delete */
     /* TODO spring security authorization einbauen */
-    @DeleteMapping(value = "{urlset}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "{urlset}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public ResponseEntity delete(@PathVariable("urlset") String urlset, @RequestBody String input, HttpServletRequest request) {
         List<String> urlList = Arrays.asList(input.split(","));
@@ -102,8 +103,9 @@ public class UrlController extends ControllerAbstract {
 
             try {
                 // @todo log not found urls for problem check
-                urlService.findUrl("loc", url);
-                removeList.add(url);
+                String urlString = (url.contains("qucosa:")) ? url.replace("qucosa:", "qucosa%3A") : url;
+                urlService.findUrl("loc", urlString);
+                removeList.add(urlString);
             } catch (NotFound ignored) { }
         }
 
@@ -118,12 +120,12 @@ public class UrlController extends ControllerAbstract {
             cntRemoves++;
         }
 
-        return new ResponseEntity<>(cntRemoves + " url's from " + urlList.size() + " removed.", HttpStatus.OK);
+        return new ResponseEntity<>(cntRemoves + " url's from " + urlList.size() + " removed.", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping(value = "/{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"", "/{urlset}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity findUrls(@PathVariable("urlset") String urlset, @RequestParam(value = "url", required = false) String url) {
+    public ResponseEntity findUrls(@PathVariable(value = "urlset", required = false) String urlset, @RequestParam(value = "url", required = false) String url) {
 
         if (url != null && !url.isEmpty()) {
             Url urlData = new Url();
@@ -141,18 +143,27 @@ public class UrlController extends ControllerAbstract {
 
         Collection<Url> urlList = new ArrayList<>();
 
-        try {
-            urlList = urlService.findUrllist("urlset_uri", urlset);
-        } catch (NotFound notFound) {
-            return new ErrorDetails(this.getClass().getName(), "findUrls", "GET:url/urlset",
-                    HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+        if (urlset != null && !urlset.isEmpty()) {
+            try {
+                urlList = urlService.findUrllist("urlset_uri", urlset);
+            } catch (NotFound notFound) {
+                return new ErrorDetails(this.getClass().getName(), "findUrls", "GET:url/urlset",
+                        HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+            }
+        } else {
+            try {
+                urlList = urlService.findAll();
+            } catch (NotFound notFound) {
+                return new ErrorDetails(this.getClass().getName(), "findUrls", "GET:url",
+                        HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
+            }
         }
 
         return new ResponseEntity<>(urlList, HttpStatus.FOUND);
     }
 
     private UrlSet findUrlSet(String urlset, HttpServletRequest request) {
-        return restTemplate.exchange(serverUrl(request) + "/urlsets/" + urlset,
+        return restTemplate.exchange(serverUrl(request, serverPort) + "/urlsets/" + urlset,
                 HttpMethod.GET,
                 null,
                 UrlSet.class).getBody();
@@ -165,10 +176,10 @@ public class UrlController extends ControllerAbstract {
             UrlSet newUrlSet = new UrlSet();
             newUrlSet.setUri(urlset);
             newUrlSet.setLastmod(Utils.getCurrentW3cDatetime());
-            newUrlSet.setLoc(serverUrl(request) + "/urlsets/" + urlset);
+            newUrlSet.setLoc(serverUrl(request, serverPort) + "/urlsets/" + urlset);
 
             urlSet = restTemplate.postForObject(
-                    serverUrl(request) + "/urlsets",
+                    serverUrl(request, serverPort) + "/urlsets",
                     newUrlSet,
                     UrlSet.class
             );
