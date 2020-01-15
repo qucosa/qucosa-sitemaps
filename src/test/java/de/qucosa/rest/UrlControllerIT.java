@@ -23,7 +23,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.client.RestTemplate;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
@@ -57,9 +56,6 @@ public class UrlControllerIT extends AbstractControllerIT {
 
     @Autowired
     UrlService urlService;
-
-    @Autowired
-    RestTemplate restTemplate;
 
     @Autowired
     private MockMvc mvc;
