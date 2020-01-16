@@ -172,7 +172,7 @@ public class UrlSetControllerIT extends AbstractControllerIT {
         mvc.perform(
                 get("/urlsets/test")
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uri", isEmptyOrNullString()))
                 .andExpect(jsonPath("$.lastmod", isEmptyOrNullString()))
                 .andExpect(jsonPath("$.loc", isEmptyOrNullString()));
