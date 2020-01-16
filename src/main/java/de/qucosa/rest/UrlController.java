@@ -86,11 +86,6 @@ public class UrlController extends ControllerAbstract {
     public ResponseEntity delete(@PathVariable("urlset") String urlset, @RequestBody String input, HttpServletRequest request) {
         List<String> urlList = Arrays.asList(input.split(","));
 
-        if (urlList.size() == 0) {
-            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
-                    HttpStatus.BAD_REQUEST, "Cannot find url's in data list.", null).response();
-        }
-
         UrlSet urlSet = findUrlSet(urlset, request);
         List<String> removeList = new ArrayList<>();
         int cntRemoves = 0;
