@@ -51,9 +51,9 @@ public class UrlController extends ControllerAbstract {
                                     HttpServletRequest request) {
         Url output = new Url();
 
-        if (url.getLoc().isEmpty()) {
+        if (url.getLoc() == null || url.getLoc().isEmpty()) {
             return new ErrorDetails(this.getClass().getName(), "createUrl", "POST:url",
-                    HttpStatus.BAD_REQUEST, "Requestbody has to contain Element 'loc'.", null).response();
+                    HttpStatus.BAD_REQUEST, "Requestbody has to contain element loc.", null).response();
         }
 
         if (url.getLoc().contains("qucosa:")) {
