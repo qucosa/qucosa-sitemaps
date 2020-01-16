@@ -140,6 +140,31 @@ public class UrlControllerIT extends AbstractControllerIT {
         assertTrue(urls.size() > 0);
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("Create failed because empty or null loc value in url object.")
+    public void createFailed() throws Exception {
+        url.setLoc("");
+        mvc.perform(
+                post("/url/test")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMsg", is("Requestbody has to contain element loc.")));
+    }
+
+    @Test()
+    @Order(7)
+    @DisplayName("Create failed because empty urlset parameter.")
+    public void createFailed2() throws Exception {
+        mvc.perform(
+                post("/url")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(status().reason(containsString("Request method 'POST' not supported")));
+    }
+
     @AfterAll
     public void schutdwonTest() {
         sqlContainer.stop();
