@@ -143,7 +143,7 @@ public class UrlSetControllerIT extends AbstractControllerIT {
     @Test
     @Order(6)
     @DisplayName("Create failed because set a exists uri.")
-    public void createFailed2() throws Exception {
+    public void createFailed_2() throws Exception {
         urlSet.setUri("ul");
         mvc.perform(
                 post("/urlsets")
