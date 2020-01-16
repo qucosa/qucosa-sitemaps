@@ -82,6 +82,10 @@ public class UrlSetController extends ControllerAbstract {
                     HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
         }
 
+        if (urlSet.getUri() == null || urlSet.getUri().isEmpty()) {
+            return new ResponseEntity<>(urlSet, HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(urlSet, HttpStatus.FOUND);
     }
 
