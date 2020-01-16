@@ -89,7 +89,7 @@ public class UrlController extends ControllerAbstract {
         List<String> removeList = new ArrayList<>();
         int cntRemoves = 0;
 
-        if (urlSet.getUri() == null) {
+        if (urlSet.getUri() == null || urlSet.getUri().isEmpty()) {
             return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
                     HttpStatus.NOT_FOUND, "Urlset " + urlset + " for url delete not found.", null).response();
         }
