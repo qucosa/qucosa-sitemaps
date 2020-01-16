@@ -21,7 +21,6 @@ import de.qucosa.repository.Dao;
 import de.qucosa.repository.exceptions.DeleteFailed;
 import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
-import de.qucosa.repository.exceptions.UpdateFailed;
 import de.qucosa.repository.model.Url;
 import org.springframework.stereotype.Repository;
 
@@ -84,17 +83,17 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public Collection<Url> saveAndSetIdentifier(Collection<Url> objects) throws SaveFailed {
+    public Collection<Url> saveAndSetIdentifier(Collection<Url> objects) {
         return null;
     }
 
     @Override
-    public Url update(Url object) throws UpdateFailed {
+    public Url update(Url object) {
         return null;
     }
 
     @Override
-    public Collection<Url> update(Collection<Url> objects) throws UpdateFailed {
+    public Collection<Url> update(Collection<Url> objects) {
         return null;
     }
 
@@ -121,7 +120,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public Url findById(String id) throws NotFound {
+    public Url findById(String id) {
         return null;
     }
 
@@ -184,27 +183,27 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public Url findByMultipleValues(String clause, String... values) throws NotFound {
+    public Url findByMultipleValues(String clause, String... values) {
         return null;
     }
 
     @Override
-    public Collection<Url> findRowsByMultipleValues(String clause, String... values) throws NotFound {
+    public Collection<Url> findRowsByMultipleValues(String clause, String... values) {
         return null;
     }
 
     @Override
-    public Collection<Url> findLastRowsByProperty(String property, int limit) throws NotFound {
+    public Collection<Url> findLastRowsByProperty(String property, int limit) {
         return null;
     }
 
     @Override
-    public Collection<Url> findFirstRowsByProperty(String property, int limit) throws NotFound {
+    public Collection<Url> findFirstRowsByProperty(String property, int limit) {
         return null;
     }
 
     @Override
-    public void delete() throws DeleteFailed {
+    public void delete() {
 
     }
 
@@ -228,7 +227,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public void delete(Url object) throws DeleteFailed {
+    public void delete(Url object) {
 
     }
 

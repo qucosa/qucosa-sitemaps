@@ -34,9 +34,9 @@ import java.util.List;
 @RequestMapping(value = "/url")
 public class UrlController extends ControllerAbstract {
 
-    private UrlService urlService;
+    private final UrlService urlService;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Autowired
     public UrlController(UrlService urlService, RestTemplate restTemplate) {
@@ -49,7 +49,7 @@ public class UrlController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity createUrl(@PathVariable("urlset") String urlset, @RequestBody Url url,
                                     HttpServletRequest request) {
-        Url output = new Url();
+        Url output;
 
         if (url.getLoc() == null || url.getLoc().isEmpty()) {
             return new ErrorDetails(this.getClass().getName(), "createUrl", "POST:url",
@@ -124,8 +124,11 @@ public class UrlController extends ControllerAbstract {
     public ResponseEntity findUrls(@PathVariable(value = "urlset", required = false) String urlset, @RequestParam(value = "url", required = false) String url) {
 
         if (url != null && !url.isEmpty()) {
-            Url urlData = new Url();
-            url = url.replace("qucosa:", "qucosa%3A");
+            Url urlData;
+
+            if (url.contains("qucosa:")) {
+                url = url.replace("qucosa:", "qucosa%3A");
+            }
 
             try {
                 urlData = urlService.findUrl("loc", url);
@@ -137,7 +140,7 @@ public class UrlController extends ControllerAbstract {
             return new ResponseEntity<>(urlData, HttpStatus.FOUND);
         }
 
-        Collection<Url> urlList = new ArrayList<>();
+        Collection<Url> urlList;
 
         if (urlset != null && !urlset.isEmpty()) {
             try {

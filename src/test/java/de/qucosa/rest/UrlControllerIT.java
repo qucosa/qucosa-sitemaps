@@ -60,7 +60,7 @@ public class UrlControllerIT extends AbstractControllerIT {
     @Autowired
     private MockMvc mvc;
 
-    Url url = new Url();
+    private final Url url = new Url();
 
     public UrlControllerIT() {
         url.setUrlSetUri("test");

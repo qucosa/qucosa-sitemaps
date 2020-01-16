@@ -41,7 +41,7 @@ import java.util.Collection;
 @RequestMapping("/sitemap")
 public class SitemapRestController extends ControllerAbstract {
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public SitemapRestController( RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

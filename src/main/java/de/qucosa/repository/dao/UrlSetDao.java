@@ -21,7 +21,6 @@ import de.qucosa.repository.Dao;
 import de.qucosa.repository.exceptions.DeleteFailed;
 import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
-import de.qucosa.repository.exceptions.UpdateFailed;
 import de.qucosa.repository.model.UrlSet;
 import org.springframework.stereotype.Repository;
 
@@ -74,22 +73,22 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
     }
 
     @Override
-    public Collection<UrlSet> saveAndSetIdentifier(Collection<UrlSet> objects) throws SaveFailed {
+    public Collection<UrlSet> saveAndSetIdentifier(Collection<UrlSet> objects) {
         return null;
     }
 
     @Override
-    public UrlSet update(UrlSet object) throws UpdateFailed {
+    public UrlSet update(UrlSet object) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> update(Collection<UrlSet> objects) throws UpdateFailed {
+    public Collection<UrlSet> update(Collection<UrlSet> objects) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> findAll() throws NotFound {
+    public Collection<UrlSet> findAll() {
         String sql = "SELECT * FROM urlset";
         Collection<UrlSet> urlSets = new ArrayList<>();
 
@@ -115,12 +114,12 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
     }
 
     @Override
-    public UrlSet findById(String id) throws NotFound {
+    public UrlSet findById(String id) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> findRowsByPropertyAndValue(String property, String value) throws NotFound {
+    public Collection<UrlSet> findRowsByPropertyAndValue(String property, String value) {
         return null;
     }
 
@@ -150,27 +149,27 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
     }
 
     @Override
-    public UrlSet findByMultipleValues(String clause, String... values) throws NotFound {
+    public UrlSet findByMultipleValues(String clause, String... values) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> findRowsByMultipleValues(String clause, String... values) throws NotFound {
+    public Collection<UrlSet> findRowsByMultipleValues(String clause, String... values) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> findLastRowsByProperty(String property, int limit) throws NotFound {
+    public Collection<UrlSet> findLastRowsByProperty(String property, int limit) {
         return null;
     }
 
     @Override
-    public Collection<UrlSet> findFirstRowsByProperty(String property, int limit) throws NotFound {
+    public Collection<UrlSet> findFirstRowsByProperty(String property, int limit) {
         return null;
     }
 
     @Override
-    public void delete() throws DeleteFailed {
+    public void delete() {
 
     }
 
@@ -194,7 +193,7 @@ public class UrlSetDao<T extends UrlSet> implements Dao<UrlSet> {
     }
 
     @Override
-    public void delete(UrlSet object) throws DeleteFailed {
+    public void delete(UrlSet object) {
 
     }
 }

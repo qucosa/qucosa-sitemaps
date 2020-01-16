@@ -16,10 +16,11 @@ import org.springframework.web.client.RestTemplate;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 
 @Configuration
 public class ApplicationConfig {
-    private Environment environment;
+    private final Environment environment;
 
     public ApplicationConfig(Environment environment) {
         this.environment = environment;
@@ -29,7 +30,7 @@ public class ApplicationConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(environment.getProperty("app.db.url"));
-        dataSource.setDriverClassName(environment.getProperty("app.db.driver"));
+        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("app.db.driver")));
         dataSource.setUsername(environment.getProperty("app.db.username"));
         dataSource.setPassword(environment.getProperty("app.db.password"));
         return dataSource;

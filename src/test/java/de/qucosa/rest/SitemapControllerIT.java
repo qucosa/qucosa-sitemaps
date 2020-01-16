@@ -40,6 +40,7 @@ public class SitemapControllerIT extends AbstractControllerIT {
     @Autowired
     private MockMvc mvc;
 
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return sitemap xml by urlset tenant.")
     public void getSitemapXml() throws Exception {
@@ -50,6 +51,7 @@ public class SitemapControllerIT extends AbstractControllerIT {
                 .andExpect(xpath("/urlset/url", null).nodeCount(greaterThan(0)));
     }
 
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return empty sitemap xml because urlset does not exists.")
     public void emptySitemapXml() throws Exception {
@@ -80,6 +82,7 @@ public class SitemapControllerIT extends AbstractControllerIT {
                 .andExpect(jsonPath("$").isEmpty());
     }
 
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return urlsets sitemap.")
     public void getSitemapUrlSetsXml() throws Exception {

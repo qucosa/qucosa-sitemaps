@@ -20,13 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
 @RequestMapping("/urlsets")
 public class UrlSetController extends ControllerAbstract {
-    private UrlSetService urlSetService;
+    private final UrlSetService urlSetService;
 
     public UrlSetController(UrlSetService urlSetService) {
         this.urlSetService = urlSetService;
@@ -35,7 +34,7 @@ public class UrlSetController extends ControllerAbstract {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity createUrlSet(@RequestBody UrlSet urlset, HttpServletRequest request) {
-        UrlSet output = null;
+        UrlSet output;
 
         if (urlset.getUri().isEmpty()) {
             return new ErrorDetails(this.getClass().getName(), "createUrlSet", "POST:urlsets",
@@ -89,7 +88,7 @@ public class UrlSetController extends ControllerAbstract {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity findAll() {
-        Collection<UrlSet> urlSets = new ArrayList<>();
+        Collection<UrlSet> urlSets;
 
         try {
             urlSets = urlSetService.findAll();

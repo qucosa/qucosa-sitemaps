@@ -61,7 +61,7 @@ public class UrlSetControllerIT extends AbstractControllerIT {
     @Autowired
     private MockMvc mvc;
 
-    private UrlSet urlSet = new UrlSet();
+    private final UrlSet urlSet = new UrlSet();
 
     public UrlSetControllerIT() {
         urlSet.setUri("test");
