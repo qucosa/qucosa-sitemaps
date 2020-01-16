@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +51,16 @@ public class SitemapControllerIT extends AbstractControllerIT {
     }
 
     @Test
+    @DisplayName("Return empty sitemap xml because urlset does not exists.")
+    public void emptySitemapXml() throws Exception {
+        mvc.perform(
+                get("/sitemap/test")
+                        .accept(MediaType.APPLICATION_XML_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(xpath("/urlset/url", null).nodeCount(is(0)));
+    }
+
+    @Test
     @DisplayName("Return sitemap json by urlset tenat.")
     public void getSitemapJson() throws Exception {
         mvc.perform(
@@ -57,6 +68,16 @@ public class SitemapControllerIT extends AbstractControllerIT {
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    @DisplayName("Return empty sitemap json because urlset does not exists.")
+    public void emptySitemapJson() throws Exception {
+        mvc.perform(
+                get("/sitemap/test")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
