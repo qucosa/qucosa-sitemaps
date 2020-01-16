@@ -96,7 +96,7 @@ public class UrlController extends ControllerAbstract {
 
         if (urlList.size() == 0) {
             return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
-                    HttpStatus.NOT_FOUND, "Cannot find url's in data list.", null).response();
+                    HttpStatus.BAD_REQUEST, "Cannot find url's in data list.", null).response();
         }
 
         for (String url : urlList) {
