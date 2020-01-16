@@ -49,7 +49,7 @@ public class UrlSetController extends ControllerAbstract {
             output = urlSetService.saveUrlSet(urlset);
         } catch (SaveFailed saveFailed) {
             return new ErrorDetails(this.getClass().getName(), "createUrlSet", "POST:urlsets",
-                    HttpStatus.ALREADY_REPORTED, saveFailed.getMessage(), saveFailed).response();
+                    HttpStatus.NOT_ACCEPTABLE, saveFailed.getMessage(), saveFailed).response();
         }
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
