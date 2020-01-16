@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,14 +50,19 @@ public class SitemapRestController extends ControllerAbstract {
     @RequestMapping(method = RequestMethod.GET, value = "/{urlset}", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public ResponseEntity getSitemapForTenant(@PathVariable("urlset") String urlset, HttpServletRequest request) {
-        Collection<Url> urls = restTemplate.exchange(
-                serverUrl(request, serverPort) + "/url/" + urlset,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
-
         SitemapModel tenantSitemap = new SitemapModel();
-        tenantSitemap.setUrl(urls);
+
+        try {
+            Collection<Url> urls = restTemplate.exchange(
+                    serverUrl(request, serverPort) + "/url/" + urlset,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
+
+            tenantSitemap.setUrl(urls);
+
+            return new ResponseEntity<>(tenantSitemap, HttpStatus.OK);
+        } catch (HttpClientErrorException ignored) { }
 
         return new ResponseEntity<>(tenantSitemap, HttpStatus.OK);
     }
@@ -64,26 +70,37 @@ public class SitemapRestController extends ControllerAbstract {
     @RequestMapping(method = RequestMethod.GET, value = "/{urlset}", produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public ResponseEntity getSitemapforTenantAsJson(@PathVariable("urlset") String urlset,  HttpServletRequest request) {
-        Collection<Url> urls = restTemplate.exchange(
-                serverUrl(request, serverPort) + "/url/" + urlset,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Collection<Url>>(){}).getBody();
 
-        return new ResponseEntity<>(urls, HttpStatus.OK);
+        try {
+            Collection<Url> urls = restTemplate.exchange(
+                    serverUrl(request, serverPort) + "/url/" + urlset,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Collection<Url>>() {
+                    }).getBody();
+
+            return new ResponseEntity<>(urls, HttpStatus.OK);
+        } catch (HttpClientErrorException ignored) { }
+
+        return new ResponseEntity<>("[]", HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public ResponseEntity getSitemapIndex(HttpServletRequest request) {
-        Collection<UrlSet> urlSets = restTemplate.exchange(
-                serverUrl(request, serverPort) + "/urlsets",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Collection<UrlSet>>(){}).getBody();
-
         SitemapIndexModel sitemapIndex = new SitemapIndexModel();
-        sitemapIndex.setUrlset(urlSets);
+
+        try {
+            Collection<UrlSet> urlSets = restTemplate.exchange(
+                    serverUrl(request, serverPort) + "/urlsets",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Collection<UrlSet>>() {
+                    }).getBody();
+
+            sitemapIndex.setUrlset(urlSets);
+            return new ResponseEntity<>(sitemapIndex, HttpStatus.OK);
+        } catch (HttpClientErrorException ignored) { }
 
         return new ResponseEntity<>(sitemapIndex, HttpStatus.OK);
     }
@@ -91,11 +108,17 @@ public class SitemapRestController extends ControllerAbstract {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity getSitemapIndexAsJson(HttpServletRequest request) {
-        Collection<UrlSet> urlSets = restTemplate.exchange(
-                serverUrl(request, serverPort) + "/urlsets",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<Collection<UrlSet>>(){}).getBody();
-        return new ResponseEntity<>(urlSets, HttpStatus.OK);
+
+        try {
+            Collection<UrlSet> urlSets = restTemplate.exchange(
+                    serverUrl(request, serverPort) + "/urlsets",
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<Collection<UrlSet>>() {
+                    }).getBody();
+            return new ResponseEntity<>(urlSets, HttpStatus.OK);
+        } catch (HttpClientErrorException ignored) { }
+
+        return new ResponseEntity<>("[]", HttpStatus.OK);
     }
 }
