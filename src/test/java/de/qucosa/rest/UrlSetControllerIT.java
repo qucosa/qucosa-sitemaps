@@ -1,5 +1,6 @@
 package de.qucosa.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.qucosa.Application;
 import de.qucosa.repository.model.UrlSet;
@@ -123,6 +124,34 @@ public class UrlSetControllerIT extends AbstractControllerIT {
         String response = mvcResult.getResponse().getContentAsString();
 
         assertThat(response, is("Urlset / Tenant test is deleted."));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Create failed because empty uri.")
+    public void createFailed() throws Exception {
+        urlSet.setUri("");
+        mvc.perform(
+                post("/urlsets")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(urlSet)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMsg", is("UrlSet uri ist empty.")));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Create failed because set a exists uri.")
+    public void createFailed2() throws Exception {
+        urlSet.setUri("ul");
+        mvc.perform(
+                post("/urlsets")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(urlSet)))
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("$.errorMsg", is("Cannot save urlset.")));
     }
 
     @AfterAll
