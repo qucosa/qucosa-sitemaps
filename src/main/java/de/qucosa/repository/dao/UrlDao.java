@@ -152,7 +152,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
             }
 
             if (list.size() == 0) {
-                throw new NotFound("SQL-ERROR: Url collections size is 0.");
+                throw new NotFound("Url collections size is 0.");
             }
 
             resultSet.close();
@@ -183,7 +183,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
             }
 
             if (url.getLoc() == null || url.getLoc().isEmpty()) {
-                throw new NotFound("SQL-ERROR: Cannot found url.");
+                throw new NotFound("Cannot found url.");
             }
 
             resultSet.close();
