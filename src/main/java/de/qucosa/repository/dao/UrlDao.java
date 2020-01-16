@@ -108,13 +108,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
             ResultSet resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
-                Url url = new Url();
-                url.setLoc(resultSet.getString("loc"));
-                url.setChangefreq(resultSet.getString("changefreq"));
-                url.setLastmod(resultSet.getString("lastmod"));
-                url.setPriority(resultSet.getString("priority"));
-                url.setUrlSetUri(resultSet.getString("urlset_uri"));
-                list.add(url);
+                list.add(getUrlObject(resultSet));
             }
 
             resultSet.close();
@@ -142,13 +136,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Url url = new Url();
-                url.setLoc(resultSet.getString("loc"));
-                url.setChangefreq(resultSet.getString("changefreq"));
-                url.setLastmod(resultSet.getString("lastmod"));
-                url.setPriority(resultSet.getString("priority"));
-                url.setUrlSetUri(resultSet.getString("urlset_uri"));
-                list.add(url);
+                list.add(getUrlObject(resultSet));
             }
 
             if (list.size() == 0) {
@@ -242,5 +230,15 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     @Override
     public void delete(Url object) throws DeleteFailed {
 
+    }
+
+    private Url getUrlObject(ResultSet resultSet) throws SQLException {
+        Url url = new Url();
+        url.setLoc(resultSet.getString("loc"));
+        url.setChangefreq(resultSet.getString("changefreq"));
+        url.setLastmod(resultSet.getString("lastmod"));
+        url.setPriority(resultSet.getString("priority"));
+        url.setUrlSetUri(resultSet.getString("urlset_uri"));
+        return url;
     }
 }
