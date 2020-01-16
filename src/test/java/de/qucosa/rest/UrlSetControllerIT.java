@@ -29,6 +29,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -162,6 +163,19 @@ public class UrlSetControllerIT extends AbstractControllerIT {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotAcceptable())
                 .andExpect(jsonPath("$.errorMsg", is("Cannot delete urlset.")));
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Not found urlset.")
+    public void notFound() throws Exception {
+        mvc.perform(
+                get("/urlsets/test")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.uri", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.lastmod", isEmptyOrNullString()))
+                .andExpect(jsonPath("$.loc", isEmptyOrNullString()));
     }
 
     @AfterAll
