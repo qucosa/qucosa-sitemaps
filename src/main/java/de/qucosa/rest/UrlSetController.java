@@ -77,13 +77,10 @@ public class UrlSetController extends ControllerAbstract {
 
         try {
             urlSet = urlSetService.findByUri("uri", urlset);
-        } catch (NotFound notFound) {
-            return new ErrorDetails(this.getClass().getName(), "find", "GET:urlsets/urlset",
-                    HttpStatus.NOT_FOUND, notFound.getMessage(), notFound).response();
-        }
+        } catch (NotFound ignored) { }
 
         if (urlSet.getUri() == null || urlSet.getUri().isEmpty()) {
-            return new ResponseEntity<>(urlSet, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(urlSet, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(urlSet, HttpStatus.FOUND);
