@@ -1,6 +1,5 @@
 package de.qucosa.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.qucosa.Application;
 import de.qucosa.repository.model.UrlSet;
@@ -152,6 +151,17 @@ public class UrlSetControllerIT extends AbstractControllerIT {
                         .content(objectMapper.writeValueAsString(urlSet)))
                 .andExpect(status().isNotAcceptable())
                 .andExpect(jsonPath("$.errorMsg", is("Cannot save urlset.")));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Delete failed because set a non exists uri.")
+    public void deleteFailed() throws Exception {
+        mvc.perform(
+                delete("/urlsets/test")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("$.errorMsg", is("Cannot delete urlset.")));
     }
 
     @AfterAll
