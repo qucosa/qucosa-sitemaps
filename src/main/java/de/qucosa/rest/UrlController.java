@@ -81,10 +81,16 @@ public class UrlController extends ControllerAbstract {
 
     /* TODO test bulk-delete */
     /* TODO spring security authorization einbauen */
-    @DeleteMapping(value = "{urlset}", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @DeleteMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity delete(@PathVariable("urlset") String urlset, @RequestBody String input, HttpServletRequest request) {
         List<String> urlList = Arrays.asList(input.split(","));
+
+        if (urlList.size() == 0) {
+            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
+                    HttpStatus.BAD_REQUEST, "Cannot find url's in data list.", null).response();
+        }
+
         UrlSet urlSet = findUrlSet(urlset, request);
         List<String> removeList = new ArrayList<>();
         int cntRemoves = 0;
@@ -92,11 +98,6 @@ public class UrlController extends ControllerAbstract {
         if (urlSet.getUri() == null) {
             return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
                     HttpStatus.NOT_FOUND, "Urlset " + urlset + " for url delete not found.", null).response();
-        }
-
-        if (urlList.size() == 0) {
-            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
-                    HttpStatus.BAD_REQUEST, "Cannot find url's in data list.", null).response();
         }
 
         for (String url : urlList) {
