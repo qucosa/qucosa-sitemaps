@@ -167,6 +167,17 @@ public class UrlControllerIT extends AbstractControllerIT {
 
     @Test
     @Order(8)
+    @DisplayName("Nor found url because not exists url.")
+    public void notFound() throws Exception {
+        mvc.perform(
+                get("/url/test?url=https://test.qucosa.de/id/qucosa:12146")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorMsg", is("Cannot found url.")));
+    }
+
+    @Test
+    @Order(9)
     @DisplayName("Delete failed because the urlset is does not exists.")
     public void deleteFailed() throws Exception {
         // delete exists test urlset
@@ -184,7 +195,18 @@ public class UrlControllerIT extends AbstractControllerIT {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
+    @DisplayName("Nor found url because not exists url.")
+    public void notFound_2() throws Exception {
+        mvc.perform(
+                get("/url/test")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errorMsg", is("Url collections size is 0.")));
+    }
+
+    @Test
+    @Order(11)
     @DisplayName("Delete failed because the request body is empty.")
     public void deleteFailed_2() throws Exception {
         mvc.perform(
@@ -195,7 +217,7 @@ public class UrlControllerIT extends AbstractControllerIT {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     @DisplayName("Delete failed because url loc does not exists.")
     public void deleteFailed_3() throws Exception {
         mvc.perform(
