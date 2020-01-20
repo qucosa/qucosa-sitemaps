@@ -9,8 +9,5 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitPlatform.class)
 @DisplayName("All sitemap controller ITs.")
 @SelectPackages("de.qucosa.rest")
-//@SelectClasses({UrlSetControllerIT.class,
-//        UrlControllerIT.class,
-//        SitemapControllerIT.class})
 public class TestSuite {
 }
