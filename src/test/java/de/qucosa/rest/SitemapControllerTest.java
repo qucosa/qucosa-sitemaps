@@ -29,14 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties= {"spring.main.allow-bean-definition-overriding=true"},
-        classes = {Application.class, AbstractControllerIT.TestConfig.class},
+        classes = {Application.class, AbstractControllerTest.TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
-@ContextConfiguration(initializers = {AbstractControllerIT.Initializer.class})
+@ContextConfiguration(initializers = {AbstractControllerTest.Initializer.class})
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
-public class SitemapControllerIT extends AbstractControllerIT {
+public class SitemapControllerTest extends AbstractControllerTest {
     @Autowired
     private MockMvc mvc;
 

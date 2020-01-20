@@ -14,7 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
-public class AbstractControllerIT {
+public class AbstractControllerTest {
     @Container
     protected static final PostgreSQLContainer sqlContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres:9.5")
             .withDatabaseName("qucosa_sitemap")

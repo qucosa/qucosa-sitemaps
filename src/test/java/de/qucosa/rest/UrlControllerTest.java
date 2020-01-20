@@ -43,14 +43,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties= {"spring.main.allow-bean-definition-overriding=true"},
-        classes = {Application.class, AbstractControllerIT.TestConfig.class},
+        classes = {Application.class, AbstractControllerTest.TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
-@ContextConfiguration(initializers = {AbstractControllerIT.Initializer.class})
+@ContextConfiguration(initializers = {AbstractControllerTest.Initializer.class})
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
-public class UrlControllerIT extends AbstractControllerIT {
+public class UrlControllerTest extends AbstractControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
@@ -62,7 +62,7 @@ public class UrlControllerIT extends AbstractControllerIT {
 
     private final Url url = new Url();
 
-    public UrlControllerIT() {
+    public UrlControllerTest() {
         url.setUrlSetUri("test");
         url.setLoc("https://test.qucosa.de/id/qucosa:12146");
     }
