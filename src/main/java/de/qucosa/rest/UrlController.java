@@ -61,7 +61,7 @@ public class UrlController extends ControllerAbstract {
         }
 
         url.setLastmod(Utils.getCurrentW3cDatetime());
-        UrlSet urlSet = urlSet(urlset, request);
+        UrlSet urlSet = ensureUrlSet(urlset, request);
 
         if (urlSet.getUri() == null) {
             url.setUrlSetUri(urlSet.getUri());
@@ -168,7 +168,7 @@ public class UrlController extends ControllerAbstract {
                 UrlSet.class).getBody();
     }
 
-    private UrlSet urlSet(String urlset, HttpServletRequest request) {
+    private UrlSet ensureUrlSet(String urlset, HttpServletRequest request) {
         UrlSet urlSet = findUrlSet(urlset, request);
 
         if (urlSet.getUri() == null) {
