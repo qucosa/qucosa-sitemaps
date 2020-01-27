@@ -44,11 +44,9 @@ public class UrlController extends ControllerAbstract {
         this.restTemplate = restTemplate;
     }
 
-    @PostMapping(value = "{urlset}", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
-    public ResponseEntity createUrl(@PathVariable("urlset") String urlset, @RequestBody Url url,
-                                    HttpServletRequest request) {
+    public ResponseEntity createUrl(@RequestBody Url url, HttpServletRequest request) {
         Url output;
 
         if (url.getLoc() == null || url.getLoc().isEmpty()) {
@@ -56,14 +54,19 @@ public class UrlController extends ControllerAbstract {
                     HttpStatus.BAD_REQUEST, "Requestbody has to contain element loc.", null).response();
         }
 
+        if (url.getUrlSetUri() == null || url.getUrlSetUri().isEmpty()) {
+            return new ErrorDetails(this.getClass().getName(), "createUrl", "POST:url",
+                    HttpStatus.BAD_REQUEST, "Urlset property in url requestbody failed.", null).response();
+        }
+
         if (url.getLoc().contains("qucosa:")) {
             url.setLoc(url.getLoc().replace("qucosa:", "qucosa%3A"));
         }
 
         url.setLastmod(Utils.getCurrentW3cDatetime());
-        UrlSet urlSet = ensureUrlSet(urlset, request);
+        UrlSet urlSet = ensureUrlSet(url.getUrlSetUri(), request);
 
-        if (urlSet.getUri() == null) {
+        if (urlSet.getUri() != null) {
             url.setUrlSetUri(urlSet.getUri());
         }
 
