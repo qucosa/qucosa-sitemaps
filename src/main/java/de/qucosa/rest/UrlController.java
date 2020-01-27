@@ -86,17 +86,10 @@ public class UrlController extends ControllerAbstract {
     /* TODO spring security authorization einbauen */
     @DeleteMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity delete(@PathVariable("urlset") String urlset, @RequestBody String input, HttpServletRequest request) {
+    public ResponseEntity delete(@RequestBody String input) {
         List<String> urlList = Arrays.asList(input.split(","));
-
-        UrlSet urlSet = findUrlSet(urlset, request);
         List<String> removeList = new ArrayList<>();
         int cntRemoves = 0;
-
-        if (urlSet.getUri() == null) {
-            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url/urlset",
-                    HttpStatus.NOT_FOUND, "Urlset " + urlset + " for url delete not found.", null).response();
-        }
 
         for (String url : urlList) {
 
