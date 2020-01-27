@@ -25,8 +25,8 @@ public class UrlService {
         return dao.saveAndSetIdentifier(url);
     }
 
-    public void deleteUrl(String column, String url) throws DeleteFailed {
-        dao.delete(column, url);
+    public void deleteUrl(Url url) throws DeleteFailed {
+        dao.delete(url);
     }
 
     public Url findUrl(String column, String value) throws NotFound {

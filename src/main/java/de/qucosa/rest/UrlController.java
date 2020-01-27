@@ -25,10 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/url")
@@ -84,35 +81,17 @@ public class UrlController extends ControllerAbstract {
 
     /* TODO test bulk-delete */
     /* TODO spring security authorization einbauen */
-    @DeleteMapping(value = "{urlset}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity delete(@RequestBody String input) {
-        List<String> urlList = Arrays.asList(input.split(","));
-        List<String> removeList = new ArrayList<>();
-        int cntRemoves = 0;
-
-        for (String url : urlList) {
-
-            try {
-                // @todo log not found urls for problem check
-                String urlString = (url.contains("qucosa:")) ? url.replace("qucosa:", "qucosa%3A") : url;
-                urlService.findUrl("loc", urlString);
-                removeList.add(urlString);
-            } catch (NotFound ignored) { }
+    public ResponseEntity delete(@RequestBody Url input) {
+        try {
+            urlService.deleteUrl(input);
+        } catch (DeleteFailed deleteFailed) {
+            return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url",
+                    HttpStatus.NOT_ACCEPTABLE, deleteFailed.getMessage(), deleteFailed).response();
         }
 
-        for (String url : removeList) {
-
-            try {
-                urlService.deleteUrl("loc", url);
-            } catch (DeleteFailed ignored) {
-                // @todo log not delete url for problem check
-            }
-
-            cntRemoves++;
-        }
-
-        return new ResponseEntity<>(cntRemoves + " url's from " + urlList.size() + " removed.", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(input.getLoc() + " is removed.", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(value = {"", "/{urlset}"}, produces = MediaType.APPLICATION_JSON_VALUE)

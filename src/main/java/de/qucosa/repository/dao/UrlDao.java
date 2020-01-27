@@ -209,11 +209,15 @@ public class UrlDao<T extends Url> implements Dao<Url> {
 
     @Override
     public void delete(String column, String value) throws DeleteFailed {
-        String sql = "DELETE FROM url WHERE " + column + "=?";
+    }
+
+    @Override
+    public void delete(Url object) throws DeleteFailed {
+        String sql = "DELETE FROM url WHERE loc = ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, value);
+            statement.setString(1, object.getLoc());
             int deletedRows = statement.executeUpdate();
 
             if (deletedRows == 0) {
@@ -224,11 +228,6 @@ public class UrlDao<T extends Url> implements Dao<Url> {
         } catch (SQLException e) {
             throw new DeleteFailed("SQL-ERROR: Cannot delete url.", e);
         }
-    }
-
-    @Override
-    public void delete(Url object) {
-
     }
 
     private Url getUrlObject(ResultSet resultSet) throws SQLException {
