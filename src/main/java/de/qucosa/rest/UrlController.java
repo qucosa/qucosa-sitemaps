@@ -85,6 +85,11 @@ public class UrlController extends ControllerAbstract {
     @ResponseBody
     public ResponseEntity delete(@RequestBody Url input) {
         try {
+
+            if (input.getLoc().contains("qucosa:")) {
+                input.setLoc(input.getLoc().replace("qucosa:", "qucosa%3A"));
+            }
+
             urlService.deleteUrl(input);
         } catch (DeleteFailed deleteFailed) {
             return new ErrorDetails(this.getClass().getName(), "delete", "DELETE:url",
