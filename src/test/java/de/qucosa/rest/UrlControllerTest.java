@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +71,7 @@ public class UrlControllerTest extends AbstractControllerTest {
     @DisplayName("Create a new url entry.")
     public void createUrl() throws Exception {
         mvc.perform(
-                post("/url/test")
+                post("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isCreated())
@@ -88,7 +87,7 @@ public class UrlControllerTest extends AbstractControllerTest {
         url.setPriority("high");
 
         mvc.perform(
-                post("/url/test")
+                post("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isCreated())
@@ -117,12 +116,15 @@ public class UrlControllerTest extends AbstractControllerTest {
     @Order(4)
     @DisplayName("Delete url from table.")
     public void deleteUrl() throws Exception {
-        MvcResult mvcResult = mvc.perform(
-                delete("/url/test")
+        Url url = new Url();
+        url.setLoc("https://test.qucosa.de/id/qucosa:12146");
+        url.setUrlSetUri("test");
+
+        mvc.perform(
+                delete("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("https://test.qucosa.de/id/qucosa:12146"))
+                        .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isNoContent()).andReturn();
-        String response = mvcResult.getResponse().getContentAsString();
     }
 
     @Test
@@ -146,7 +148,7 @@ public class UrlControllerTest extends AbstractControllerTest {
     public void createFailed() throws Exception {
         url.setLoc("");
         mvc.perform(
-                post("/url/test")
+                post("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(url)))
                 .andExpect(status().isBadRequest())
@@ -155,19 +157,7 @@ public class UrlControllerTest extends AbstractControllerTest {
 
     @Test
     @Order(7)
-    @DisplayName("Create failed because empty urlset parameter.")
-    public void createFailed_2() throws Exception {
-        mvc.perform(
-                post("/url")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(url)))
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(status().reason(containsString("Request method 'POST' not supported")));
-    }
-
-    @Test
-    @Order(8)
-    @DisplayName("Nor found url because not exists url.")
+    @DisplayName("Not found url because not exists url.")
     public void notFound() throws Exception {
         mvc.perform(
                 get("/url/test?url=https://test.qucosa.de/id/qucosa:12146")
@@ -177,26 +167,8 @@ public class UrlControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @Order(9)
-    @DisplayName("Delete failed because the urlset is does not exists.")
-    public void deleteFailed() throws Exception {
-        // delete exists test urlset
-        mvc.perform(
-                delete("/urlsets/test")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isNoContent());
-
-        mvc.perform(
-                delete("/url/test")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("https://test.qucosa.de/id/qucosa:12146"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMsg", is("Urlset test for url delete not found.")));
-    }
-
-    @Test
-    @Order(10)
-    @DisplayName("Nor found url because not exists url.")
+    @Order(8)
+    @DisplayName("Not found url because not exists url.")
     public void notFound_2() throws Exception {
         mvc.perform(
                 get("/url/test")
@@ -206,26 +178,29 @@ public class UrlControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(9)
     @DisplayName("Delete failed because the request body is empty.")
     public void deleteFailed_2() throws Exception {
         mvc.perform(
-                delete("/url/test")
+                delete("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(""))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @Order(12)
+    @Order(10)
     @DisplayName("Delete failed because url loc does not exists.")
     public void deleteFailed_3() throws Exception {
+        Url url = new Url();
+        url.setLoc("https://test.qucosa.de/id/qucosa:12146");
+        url.setUrlSetUri("test");
+
         mvc.perform(
-                delete("/url/ul")
+                delete("/url")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("https://test.qucosa.de/id/qucosa:12146"))
-                .andExpect(status().isNoContent())
-                .andExpect(content().string("0 url's from 1 removed."));
+                        .content(objectMapper.writeValueAsString(url)))
+                .andExpect(status().isNotAcceptable());
     }
 
     @AfterAll
