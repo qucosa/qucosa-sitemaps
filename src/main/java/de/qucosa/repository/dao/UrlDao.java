@@ -208,7 +208,7 @@ public class UrlDao<T extends Url> implements Dao<Url> {
     }
 
     @Override
-    public void delete(String column, String value) throws DeleteFailed {
+    public void delete(String column, String value) {
     }
 
     @Override

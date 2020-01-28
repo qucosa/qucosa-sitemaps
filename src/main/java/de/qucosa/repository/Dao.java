@@ -26,29 +26,29 @@ import java.util.Collection;
 public interface Dao<T> {
     T saveAndSetIdentifier(T object) throws SaveFailed;
 
-    Collection<T> saveAndSetIdentifier(Collection<T> objects) throws SaveFailed;
+    Collection<T> saveAndSetIdentifier(Collection<T> objects);
 
-    T update(T object) throws UpdateFailed;
+    T update(T object);
 
-    Collection<T> update(Collection<T> objects) throws UpdateFailed;
+    Collection<T> update(Collection<T> objects);
 
     Collection<T> findAll() throws NotFound;
 
-    T findById(String id) throws NotFound;
+    T findById(String id);
 
     Collection<T> findRowsByPropertyAndValue(String property, String value) throws NotFound;
 
     T findRowByPropertyAndValue(String property, String value) throws NotFound;
 
-    T findByMultipleValues(String clause, String... values) throws NotFound;
+    T findByMultipleValues(String clause, String... values);
 
-    Collection<T> findRowsByMultipleValues(String clause, String... values) throws NotFound;
+    Collection<T> findRowsByMultipleValues(String clause, String... values);
 
-    Collection<T> findLastRowsByProperty(String property, int limit) throws NotFound;
+    Collection<T> findLastRowsByProperty(String property, int limit);
 
-    Collection<T> findFirstRowsByProperty(String property, int limit) throws NotFound;
+    Collection<T> findFirstRowsByProperty(String property, int limit);
 
-    void delete() throws DeleteFailed;
+    void delete();
 
     void delete(String column, String value) throws DeleteFailed;
 
