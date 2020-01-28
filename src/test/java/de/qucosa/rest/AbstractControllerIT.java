@@ -1,6 +1,7 @@
 package de.qucosa.rest;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -12,9 +13,9 @@ import org.testcontainers.junit.jupiter.Container;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 public class AbstractControllerIT {
+
     @Container
     protected static final PostgreSQLContainer sqlContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres:9.5")
             .withDatabaseName("qucosa_sitemap")
@@ -22,12 +23,12 @@ public class AbstractControllerIT {
             .withPassword("postgres")
             .withInitScript("insert-table-data.sql")
             .withStartupTimeoutSeconds(600)
-            .withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
-                @Override
-                public void accept(CreateContainerCmd createContainerCmd) {
-                    createContainerCmd.withName("qucosa-sitemap-db");
-                }
-            });
+            /* NOTE CreateContainerCmdModifier exposes internal API
+                However, there is no better way to set the container name hence the feature
+                request for a proper API has been dropped
+                @see https://github.com/testcontainers/testcontainers-java/issues/254
+             */
+            .withCreateContainerCmdModifier(cmd -> ((CreateContainerCmd) cmd).withName("qucosa-sitemap-db"));
 
     public static class Initializer
             implements ApplicationContextInitializer<ConfigurableApplicationContext> {
