@@ -29,18 +29,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties= {"spring.main.allow-bean-definition-overriding=true"},
-        classes = {Application.class, AbstractControllerTest.TestConfig.class},
+        classes = {Application.class, AbstractControllerIT.TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
-@ContextConfiguration(initializers = {AbstractControllerTest.Initializer.class})
+@ContextConfiguration(initializers = {AbstractControllerIT.Initializer.class})
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
-public class SitemapControllerTest extends AbstractControllerTest {
+public class SitemapControllerIT extends AbstractControllerIT {
     @Autowired
     private MockMvc mvc;
 
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return sitemap xml by urlset tenant.")
     public void getSitemapXml() throws Exception {
@@ -48,7 +47,7 @@ public class SitemapControllerTest extends AbstractControllerTest {
                 get("/sitemap/ul")
                         .accept(MediaType.APPLICATION_XML_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(xpath("/urlset/url", null).nodeCount(greaterThan(0)));
+                .andExpect(xpath("/urlset/url").nodeCount(greaterThan(0)));
     }
 
     @SuppressWarnings("ConfusingArgumentToVarargsMethod")
@@ -59,7 +58,7 @@ public class SitemapControllerTest extends AbstractControllerTest {
                 get("/sitemap/test")
                         .accept(MediaType.APPLICATION_XML_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(xpath("/urlset/url", null).nodeCount(is(0)));
+                .andExpect(xpath("/urlset/url").nodeCount(is(0)));
     }
 
     @Test
@@ -82,7 +81,6 @@ public class SitemapControllerTest extends AbstractControllerTest {
                 .andExpect(jsonPath("$").isEmpty());
     }
 
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return urlsets sitemap.")
     public void getSitemapUrlSetsXml() throws Exception {
@@ -90,8 +88,8 @@ public class SitemapControllerTest extends AbstractControllerTest {
                 get("/sitemap")
                         .accept(MediaType.APPLICATION_XML_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(xpath("/sitemapindex/sitemap", null).nodeCount(greaterThan(0)))
-                .andExpect(xpath("/sitemapindex/sitemap/loc", null).nodeCount(greaterThan(0)));
+                .andExpect(xpath("/sitemapindex/sitemap").nodeCount(greaterThan(0)))
+                .andExpect(xpath("/sitemapindex/sitemap/loc").nodeCount(greaterThan(0)));
     }
 
     @Test
