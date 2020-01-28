@@ -19,7 +19,6 @@ package de.qucosa.repository;
 import de.qucosa.repository.exceptions.DeleteFailed;
 import de.qucosa.repository.exceptions.NotFound;
 import de.qucosa.repository.exceptions.SaveFailed;
-import de.qucosa.repository.exceptions.UpdateFailed;
 
 import java.util.Collection;
 
