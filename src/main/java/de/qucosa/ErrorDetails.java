@@ -21,15 +21,15 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 
 public class ErrorDetails {
-    private String classname;
-    private LocalDateTime date;
-    private String errorMsg;
+    private final String classname;
+    private final LocalDateTime date;
+    private final String errorMsg;
     private Exception exception;
-    private String method;
+    private final String method;
     private String requestMethod;
     private String requestPath;
     private StackTraceElement[] stacktrace;
-    private HttpStatus statuscode;
+    private final HttpStatus statuscode;
 
     public ErrorDetails(String classname, String method, String requestMethodAndPath, HttpStatus statuscode, String errorMsg, Exception exception) {
         this.date = LocalDateTime.now();
