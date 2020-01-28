@@ -50,7 +50,6 @@ public class SitemapControllerIT extends AbstractControllerIT {
                 .andExpect(xpath("/urlset/url").nodeCount(greaterThan(0)));
     }
 
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     @Test
     @DisplayName("Return empty sitemap xml because urlset does not exists.")
     public void emptySitemapXml() throws Exception {
