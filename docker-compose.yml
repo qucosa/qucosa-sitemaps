@@ -1,0 +1,31 @@
+version: '2.0'
+
+services:
+  qucosa-sitemap-db:
+    container_name: qucosa-sitemap-db
+    build:
+      context: .
+      dockerfile: ./Dockerfile.postgres
+    ports:
+      - "4721:5432"
+    environment:
+      POSTGRES_PASSWORD: sitemap
+      POSTGRES_USER: sitemap
+      POSTGRES_DB: qucosa_sitemap
+
+  qucosa-sitemap:
+    container_name: qucosa-sitemap
+    build:
+      context: .
+      dockerfile: ./Dockerfile.sitemap
+    image: qucosa-sitemap:latest
+    ports:
+      - "4821:8080"
+    networks:
+      - default
+    links:
+        - qucosa-sitemap-db:db
+    depends_on:
+      - qucosa-sitemap-db
+    environment:
+      WAIT_HOSTS: db:5432
