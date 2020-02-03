@@ -1,5 +1,0 @@
-# linux user to start the service
-springboot_user: sitemapservice
-
-# linux group to start the service
-springboot_group: sitemapservice
