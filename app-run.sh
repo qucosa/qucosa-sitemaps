@@ -26,7 +26,7 @@ done
 
 if [ ! -z "$u" ]
 then
-  java -jar qucosa-sitemaps-0.0.1-SNAPSHOT.jar "-Dspring.config.location=./docker.properties, $u"
+  java -jar qucosa-sitemaps.jar "-Dspring.config.location=./docker.properties, $u"
 else
-  java -jar qucosa-sitemaps-0.0.1-SNAPSHOT.jar "-Dspring.config.location=./docker.properties"
+  java -jar qucosa-sitemaps.jar "-Dspring.config.location=./docker.properties"
 fi
