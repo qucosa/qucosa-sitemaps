@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "spring.main.allow-bean-definition-overriding=true" > docker.properties
+
 echo "app.db.url=$PSQL_URL" > docker.properties
 
 if [ ! -z "$PSQL_USER" ]
