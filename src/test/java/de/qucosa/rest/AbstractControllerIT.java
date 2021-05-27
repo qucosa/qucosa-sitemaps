@@ -18,7 +18,6 @@ package de.qucosa.rest;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -27,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
