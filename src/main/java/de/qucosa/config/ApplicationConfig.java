@@ -46,10 +46,10 @@ public class ApplicationConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(environment.getProperty("app.db.url"));
-        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("app.db.driver")));
-        dataSource.setUsername(environment.getProperty("app.db.username"));
-        dataSource.setPassword(environment.getProperty("app.db.password"));
+        dataSource.setUrl(environment.getProperty("psql.url"));
+        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("psql.driver")));
+        dataSource.setUsername(environment.getProperty("psql.user"));
+        dataSource.setPassword(environment.getProperty("psql.passwd"));
         return dataSource;
     }
 
@@ -63,24 +63,24 @@ public class ApplicationConfig {
         return new RestTemplate();
     }
 
-    @Bean
+    @Bean(name = "confUrlDao")
     public Dao<Url> urlDao() throws SQLException {
         return new UrlDao<>(connection());
     }
 
-    @Bean
+    @Bean(name = "confUrlService")
     public UrlService urlService() throws SQLException {
         UrlService urlService = new UrlService();
         urlService.setDao(urlDao());
         return urlService;
     }
 
-    @Bean
+    @Bean(name = "confUrlSet")
     public Dao<UrlSet> urlSetDao() throws SQLException {
         return new UrlSetDao<>(connection());
     }
 
-    @Bean
+    @Bean(name = "confUrlSetService")
     public UrlSetService urlSetService() throws SQLException {
         UrlSetService urlSetService = new UrlSetService();
         urlSetService.setDao(urlSetDao());
