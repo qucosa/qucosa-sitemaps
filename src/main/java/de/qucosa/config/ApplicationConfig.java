@@ -46,10 +46,10 @@ public class ApplicationConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(environment.getProperty("app.db.url"));
-        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("app.db.driver")));
-        dataSource.setUsername(environment.getProperty("app.db.username"));
-        dataSource.setPassword(environment.getProperty("app.db.password"));
+        dataSource.setUrl(environment.getProperty("psql.url"));
+        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("psql.driver")));
+        dataSource.setUsername(environment.getProperty("psql.user"));
+        dataSource.setPassword(environment.getProperty("psql.passwd"));
         return dataSource;
     }
 

@@ -2,16 +2,16 @@
 
 echo "spring.main.allow-bean-definition-overriding=true" > docker.properties
 
-echo "app.db.url=$PSQL_URL" >> docker.properties
+echo "psql.url=$PSQL_URL" >> docker.properties
 
 if [ ! -z "$PSQL_USER" ]
 then
-  echo "app.db.username=$PSQL_USER" >> docker.properties
+  echo "psql.user=$PSQL_USER" >> docker.properties
 fi
 
 if [ ! -z "$PSQL_PASSWD" ]
 then
-  echo "app.db.password=$PSQL_PASSWD" >> docker.properties
+  echo "psql.passwd=$PSQL_PASSWD" >> docker.properties
 fi
 
 if [ ! -z "$SERVER_PORT" ]
