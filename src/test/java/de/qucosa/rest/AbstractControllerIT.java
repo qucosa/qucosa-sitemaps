@@ -61,7 +61,7 @@ public class AbstractControllerIT {
         }
     }
 
-    @TestConfiguration(value = "classpath:application-dev.properties")
+    @TestConfiguration(value = "classpath:application.properties")
     public static class TestConfig {
 
         @Bean
