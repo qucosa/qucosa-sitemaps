@@ -63,24 +63,24 @@ public class ApplicationConfig {
         return new RestTemplate();
     }
 
-    @Bean(name = "confUrlDao")
+    @Bean
     public Dao<Url> urlDao() throws SQLException {
         return new UrlDao<>(connection());
     }
 
-    @Bean(name = "confUrlService")
+    @Bean
     public UrlService urlService() throws SQLException {
         UrlService urlService = new UrlService();
         urlService.setDao(urlDao());
         return urlService;
     }
 
-    @Bean(name = "confUrlSet")
+    @Bean
     public Dao<UrlSet> urlSetDao() throws SQLException {
         return new UrlSetDao<>(connection());
     }
 
-    @Bean(name = "confUrlSetService")
+    @Bean
     public UrlSetService urlSetService() throws SQLException {
         UrlSetService urlSetService = new UrlSetService();
         urlSetService.setDao(urlSetDao());
